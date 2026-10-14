@@ -10,6 +10,8 @@ struct DevisMinuteApp: App {
 
     init() {
         let container: ModelContainer
+        // SwiftData attend que le dossier Application Support existe déjà (absent au tout premier lancement).
+        try? FileManager.default.createDirectory(at: URL.applicationSupportDirectory, withIntermediateDirectories: true)
         do {
             container = try ModelContainer(for: SettingsEntity.self, CustomerEntity.self, CatalogEntity.self, DocumentEntity.self)
         } catch {

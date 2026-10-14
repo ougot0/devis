@@ -12,8 +12,9 @@
 |---|---|
 | `DevisCore` (calculs, numérotation, statuts, conformité, sceaux, sauvegarde, CSV, statistiques, rentabilité, CII) | Compilé et testé sous Linux (Swift 6.0.3) : 81 tests |
 | `DevisPDF` (moteur PDF, 8 modèles, multipage) | Compilé et testé sous Linux : 13 tests ; PDF validés structurellement (table xref) et contrôlés visuellement après conversion en images (poppler) |
-| Application iOS (`DevisMinute/`) | **Non compilée à ce stade** : SwiftUI, SwiftData et StoreKit n'existent pas sous Linux. Le workflow `.github/workflows/ci.yml` la compile et lance ses tests sur macOS (GitHub Actions). |
-| Projet Xcode | Analysé par un lecteur `pbxproj` indépendant ; **non ouvert dans Xcode** |
+| Application iOS (`DevisMinute/`) | Compilée par `xcodebuild` sur GitHub Actions (`macos-15`, simulateur iPhone 16 Pro, SDK iOS 26.2) ; 7 tests d'intégration `AppDataStoreTests` réussis (émission, numérotation, verrouillage, paiements, avoirs, acomptes, sauvegarde/restauration). Workflow : `.github/workflows/ci.yml`. |
+| Projet Xcode | Utilisé tel quel par `xcodebuild` en CI ; jamais ouvert dans l'interface d'Xcode |
+| Interface utilisateur | **Non testée manuellement** (aucun Mac interactif disponible) : parcours, ergonomie, VoiceOver, Dynamic Type et rendu visuel des écrans restent à vérifier |
 
 ## Moteur métier
 
@@ -46,7 +47,7 @@ xcodebuild test -project DevisMinute.xcodeproj -scheme DevisMinute \
 
 ## Reste à faire avant publication
 
-1. Faire passer la compilation iOS dans Xcode et corriger les éventuelles erreurs (code écrit sans compilateur iOS).
+1. Ouvrir le projet dans Xcode, configurer la signature, lancer sur simulateur.
 2. Tester sur simulateur puis sur au moins un iPhone réel : premier lancement, création d'un devis en moins de deux minutes, émission, paiement partiel, avoir, aperçu et partage du PDF, sauvegarde chiffrée puis restauration sur un autre appareil, achat intégré en environnement de test (sandbox).
 3. Vérifier l'accessibilité : VoiceOver sur les écrans principaux, tailles de texte maximales (Dynamic Type), contraste en mode sombre.
 4. Ouvrir les PDF générés dans Aperçu, Adobe Acrobat et sur un PC Windows ; tester l'impression.

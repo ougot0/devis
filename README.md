@@ -2,7 +2,7 @@
 
 Application iPhone de devis, de facturation et de gestion commerciale simplifiée pour les professionnels français. Native (Swift, SwiftUI, SwiftData), entièrement hors ligne, sans serveur, sans abonnement et sans dépendance payante.
 
-> **État du projet (14/10/2026).** Le moteur métier et le générateur PDF sont compilés et testés (94 tests automatisés, sous Linux avec Swift 6.0.3). L'application iOS est écrite mais **n'a pas encore été compilée dans Xcode, ni testée sur un simulateur ou un iPhone** (aucun Mac n'était disponible dans l'environnement de développement). Une intégration continue GitHub Actions sur macOS a été ajoutée pour la compiler et exécuter ses tests. Voir [docs/BUILD.md](docs/BUILD.md) et la section « Reste à faire ».
+> **État du projet (14/10/2026).** Le moteur métier et le générateur PDF sont testés (94 tests, sous Linux et macOS). L'application iOS **compile dans Xcode** et ses 7 tests d'intégration passent sur simulateur (intégration continue GitHub Actions, `macos-15`, SDK iOS 26.2). L'interface **n'a pas encore été utilisée manuellement** sur simulateur ni sur iPhone : voir « Reste à faire » dans [docs/BUILD.md](docs/BUILD.md).
 
 ## Organisation du dépôt
 
