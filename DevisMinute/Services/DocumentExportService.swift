@@ -13,7 +13,7 @@ enum DocumentExportService {
     }
 
     @MainActor
-    static func renderPDF(for record: DocumentRecord, store: DataStore) -> RenderResult {
+    static func renderPDF(for record: DocumentRecord, store: AppDataStore) -> RenderResult {
         let isDraft = record.document.kind != .quote && record.invoiceStatus != .issued
         var payment: PaymentSummary?
         if record.isIssuedInvoice && record.document.kind != .creditNote {
@@ -52,7 +52,7 @@ enum DocumentExportService {
     }
 
     @MainActor
-    static func pdfFile(for record: DocumentRecord, store: DataStore) throws -> URL {
+    static func pdfFile(for record: DocumentRecord, store: AppDataStore) throws -> URL {
         let result = renderPDF(for: record, store: store)
         return try temporaryFile(named: DocumentPDFRenderer.suggestedFileName(for: record.document), data: result.data)
     }

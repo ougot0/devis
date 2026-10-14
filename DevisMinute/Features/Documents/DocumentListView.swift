@@ -77,7 +77,7 @@ struct DocumentRow: View {
 
 /// Liste des devis ou des factures, avec recherche et filtres.
 struct DocumentListView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     let group: DocumentGroup
 
     @Query private var entities: [DocumentEntity]

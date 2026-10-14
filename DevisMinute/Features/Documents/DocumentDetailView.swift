@@ -3,7 +3,7 @@ import DevisCore
 
 /// Fiche d'un document : aperçu, statut, actions, paiements, intégrité.
 struct DocumentDetailView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @Environment(PurchaseManager.self) private var purchases
     @Environment(\.dismiss) private var dismiss
     let documentID: UUID

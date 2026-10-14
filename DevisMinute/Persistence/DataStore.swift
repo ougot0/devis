@@ -30,7 +30,7 @@ enum StoreError: LocalizedError {
 /// cette classe ne fait que les orchestrer et persister le résultat.
 @MainActor
 @Observable
-final class DataStore {
+final class AppDataStore {
     let context: ModelContext
     private let settings: SettingsEntity
 

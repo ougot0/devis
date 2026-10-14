@@ -4,7 +4,7 @@ import DevisCore
 
 /// Sauvegarde complète, restauration vérifiée, exports CSV et imports.
 struct BackupView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @Environment(PurchaseManager.self) private var purchases
 
     @State private var usePassword = true

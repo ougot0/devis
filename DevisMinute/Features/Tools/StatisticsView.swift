@@ -4,7 +4,7 @@ import DevisCore
 
 /// Statistiques calculées exclusivement à partir des documents enregistrés.
 struct StatisticsView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @Environment(PurchaseManager.self) private var purchases
     @State private var months = 12
     @State private var report: StatisticsReport?

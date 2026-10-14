@@ -5,7 +5,7 @@ import DevisPDF
 
 /// Réglages de l'entreprise et des documents.
 struct SettingsView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @Environment(AppLock.self) private var appLock
 
     var body: some View {
@@ -32,7 +32,7 @@ struct SettingsView: View {
 }
 
 struct CompanySettingsView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     @State private var profile = CompanyProfile()
     @State private var loaded = false
@@ -75,7 +75,7 @@ struct CompanySettingsView: View {
 
 /// Choix du modèle, de la couleur, de la typographie et du logo, avec aperçu réel.
 struct AppearanceSettingsView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @Environment(PurchaseManager.self) private var purchases
     @State private var appearance = DocumentAppearance()
     @State private var accent = Color.accentColor
@@ -133,12 +133,13 @@ struct AppearanceSettingsView: View {
                     .onChange(of: appearance.showLogo) { _, _ in save() }
             }
             Section("Logo") {
+                let hasLogo = store.logoJPEG != nil
                 if let logo = store.logoJPEG, let image = UIImage(data: logo) {
                     Image(uiImage: image).resizable().scaledToFit().frame(maxHeight: 70)
                         .accessibilityLabel("Logo actuel")
                 }
                 PhotosPicker(selection: $photoItem, matching: .images) {
-                    Label(store.logoJPEG == nil ? "Choisir un logo" : "Remplacer le logo", systemImage: "photo")
+                    Label(hasLogo ? "Remplacer le logo" : "Choisir un logo", systemImage: "photo")
                 }
                 if store.logoJPEG != nil {
                     Button("Retirer le logo", role: .destructive) { try? store.updateLogo(nil) }
@@ -205,7 +206,7 @@ struct AppearanceSettingsView: View {
 
 /// Formats de numérotation.
 struct NumberingSettingsView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @State private var patterns: [NumberingSeries: String] = [:]
     @State private var resets: [NumberingSeries: Bool] = [:]
     @State private var error: PresentedError?

@@ -4,7 +4,7 @@ import DevisCore
 
 /// Tableau de bord : distingue clairement devis en attente, montants facturés et sommes encaissées.
 struct DashboardView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @Binding var selection: RootView.AppTab
 
     @State private var records: [DocumentRecord] = []

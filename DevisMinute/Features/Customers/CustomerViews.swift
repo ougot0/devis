@@ -4,7 +4,7 @@ import DevisCore
 
 /// Répertoire clients avec recherche et filtre par type.
 struct CustomerListView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @Query(sort: \CustomerEntity.name) private var entities: [CustomerEntity]
     @State private var search = ""
     @State private var kindFilter: CustomerKind?
@@ -59,7 +59,7 @@ struct CustomerListView: View {
 
 /// Fiche client : coordonnées, historique des devis et factures, montants facturés et encaissés.
 struct CustomerDetailView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     let customerID: UUID
 
     @State private var customer: CustomerRecord?
@@ -151,7 +151,7 @@ struct CustomerDetailView: View {
 
 /// Création et modification d'un client.
 struct CustomerEditorView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     @State private var record: CustomerRecord
     @State private var error: PresentedError?

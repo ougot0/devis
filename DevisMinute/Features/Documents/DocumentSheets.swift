@@ -5,7 +5,7 @@ import DevisPDF
 
 /// Aperçu fidèle du PDF (rendu identique au fichier partagé) et feuille de partage iOS.
 struct PDFPreviewView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     let record: DocumentRecord
 
@@ -86,7 +86,7 @@ struct PDFKitView: UIViewRepresentable {
 
 /// Enregistrement d'un paiement (total ou partiel).
 struct PaymentSheet: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     let record: DocumentRecord
     let allRecords: [DocumentRecord]
@@ -137,7 +137,7 @@ struct PaymentSheet: View {
 
 /// Création d'un avoir (total ou partiel) : seule procédure de correction d'une facture émise.
 struct CreditNoteSheet: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     let record: DocumentRecord
     let onCreated: (DocumentRecord) -> Void
@@ -198,7 +198,7 @@ struct CreditNoteSheet: View {
 
 /// Facture d'acompte sur un devis.
 struct DepositSheet: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     let record: DocumentRecord
     let onCreated: (DocumentRecord) -> Void

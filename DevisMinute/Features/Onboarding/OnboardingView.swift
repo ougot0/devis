@@ -5,7 +5,7 @@ import DevisPDF
 
 /// Assistant de configuration initiale : 4 étapes courtes, puis le premier devis.
 struct OnboardingView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @State private var step = 0
     @State private var profile = CompanyProfile()
     @State private var appearance = DocumentAppearance()

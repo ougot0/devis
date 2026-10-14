@@ -5,14 +5,14 @@ import DevisCore
 
 /// Tests d'intégration de la couche de persistance (base SwiftData en mémoire).
 @MainActor
-final class DataStoreTests: XCTestCase {
+final class AppDataStoreTests: XCTestCase {
     private var container: ModelContainer!
-    private var store: DataStore!
+    private var store: AppDataStore!
 
     override func setUp() async throws {
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         container = try ModelContainer(for: SettingsEntity.self, CustomerEntity.self, CatalogEntity.self, DocumentEntity.self, configurations: configuration)
-        store = DataStore(context: container.mainContext)
+        store = AppDataStore(context: container.mainContext)
         let profile = CompanyProfile(
             tradeName: "Atelier Test", legalName: "Atelier Test SARL", legalForm: .sarl, shareCapital: 1000,
             address: PostalAddress(line1: "1 rue A", postalCode: "75001", city: "Paris"),

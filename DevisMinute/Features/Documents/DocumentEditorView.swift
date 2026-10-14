@@ -4,7 +4,7 @@ import DevisCore
 /// Éditeur de devis et de factures brouillons.
 /// Calculs instantanés, lignes réorganisables, client et catalogue en deux touches.
 struct DocumentEditorView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @Environment(\.dismiss) private var dismiss
 
     @State private var record: DocumentRecord

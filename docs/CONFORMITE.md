@@ -44,7 +44,7 @@ Le devis comporte les informations du vendeur et du client, la date, la durée d
 
 - Factures et factures d'acompte partagent une séquence continue ; les avoirs ont leur propre séquence. Le numéro n'est attribué qu'à l'émission : un brouillon supprimé ne crée jamais de trou.
 - Une date d'émission antérieure à celle de la dernière facture émise est refusée.
-- Une facture émise ne peut être ni modifiée ni supprimée (contrôles dans `DataStore.save` et `DataStore.delete`). Les corrections passent par un avoir qui référence la facture d'origine.
+- Une facture émise ne peut être ni modifiée ni supprimée (contrôles dans `AppDataStore.save` et `AppDataStore.delete`). Les corrections passent par un avoir qui référence la facture d'origine.
 - Chaque document émis reçoit une empreinte SHA-256 chaînée à la précédente (`DocumentSealer`). Un écran permet de vérifier la chaîne.
 
 **Limites** :

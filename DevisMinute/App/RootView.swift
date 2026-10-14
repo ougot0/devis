@@ -2,7 +2,7 @@ import SwiftUI
 
 /// Racine : assistant de configuration au premier lancement, puis navigation par onglets.
 struct RootView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @Environment(AppLock.self) private var appLock
     @Environment(\.scenePhase) private var scenePhase
     @State private var selection: AppTab = .home

@@ -3,7 +3,7 @@ import DevisCore
 
 /// Édition d'une ligne de document.
 struct LineEditorView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @Environment(\.dismiss) private var dismiss
 
     @State private var line: DocumentLine

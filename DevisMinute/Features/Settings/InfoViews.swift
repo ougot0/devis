@@ -3,7 +3,7 @@ import DevisCore
 
 /// Vérification de l'intégrité des factures émises (sceaux chaînés, continuité).
 struct IntegrityView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @State private var problems: [String]?
     @State private var issuedCount = 0
 

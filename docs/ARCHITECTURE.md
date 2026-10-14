@@ -14,7 +14,7 @@
 ┌──────────────────────── Application iOS (DevisMinute/) ───────────────────────┐
 │ Features/   Vues SwiftUI : Accueil, Devis, Factures, Clients, Catalogue,       │
 │             Statistiques, Rentabilité, Réglages, Sauvegarde, Intégrité…        │
-│ Persistence/ DataStore (@Observable, @MainActor) ── orchestre les règles       │
+│ Persistence/ AppDataStore (@Observable, @MainActor) ── orchestre les règles       │
 │             Entities (SwiftData) : contenu JSON + colonnes de recherche        │
 │ Services/   Export (PDF, XML, fichiers temporaires), StoreKit 2, verrouillage  │
 └───────────────┬──────────────────────────────────────────────────────────────┘
@@ -48,7 +48,7 @@ Le contenu métier est stocké en JSON (encodeur à clés triées) plutôt qu'en
 ## Flux principaux
 
 - **Devis** : brouillon → envoyé → accepté / refusé (expiré calculé d'après la date de validité). Numéroté au premier enregistrement. Modifiable tant qu'il n'est ni accepté ni refusé ; sinon, duplication.
-- **Facture** : brouillon sans numéro → `DataStore.issue` : figement de l'émetteur, contrôle des mentions (`ComplianceValidator`), numéro chronologique (`NumberingService`), sceau chaîné (`DocumentSealer`), verrouillage.
+- **Facture** : brouillon sans numéro → `AppDataStore.issue` : figement de l'émetteur, contrôle des mentions (`ComplianceValidator`), numéro chronologique (`NumberingService`), sceau chaîné (`DocumentSealer`), verrouillage.
 - **Acompte** : facture d'acompte depuis un devis (TVA ventilée selon les taux du devis), puis déduction automatique dans la facture de solde.
 - **Avoir** : total (reprise des lignes) ou partiel ; imputé sur le solde de la facture d'origine.
 - **Paiements** : déclarés par l'utilisateur, plafonnés au solde ; état payé / partiel / en retard calculé.

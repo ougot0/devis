@@ -4,7 +4,7 @@ import DevisCore
 
 /// Catalogue de produits et prestations réutilisables.
 struct CatalogListView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @Query(sort: \CatalogEntity.name) private var entities: [CatalogEntity]
     @State private var search = ""
     @State private var category: String?
@@ -75,7 +75,7 @@ struct CatalogListView: View {
 }
 
 struct CatalogItemEditorView: View {
-    @Environment(DataStore.self) private var store
+    @Environment(AppDataStore.self) private var store
     @Environment(\.dismiss) private var dismiss
     @State private var item: CatalogItem
     @State private var error: PresentedError?

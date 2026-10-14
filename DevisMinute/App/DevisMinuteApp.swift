@@ -4,7 +4,7 @@ import SwiftData
 @main
 struct DevisMinuteApp: App {
     private let container: ModelContainer
-    @State private var store: DataStore
+    @State private var store: AppDataStore
     @State private var purchases = PurchaseManager()
     @State private var appLock = AppLock()
 
@@ -17,7 +17,7 @@ struct DevisMinuteApp: App {
             fatalError("Impossible d'ouvrir la base de données locale : \(error)")
         }
         self.container = container
-        _store = State(initialValue: DataStore(context: container.mainContext))
+        _store = State(initialValue: AppDataStore(context: container.mainContext))
         DocumentExportService.purgeTemporaryFiles()
     }
 
