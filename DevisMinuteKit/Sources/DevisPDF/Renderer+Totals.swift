@@ -1,0 +1,230 @@
+import Foundation
+import DevisCore
+
+/// Ligne du bloc des totaux.
+struct TotalRow {
+    enum Emphasis { case normal, strong, grand, deduction }
+    var label: String
+    var value: String
+    var emphasis: Emphasis
+}
+
+/// Totaux, conditions, mentions légales et zone de signature.
+extension RenderSession {
+
+    func totalRows() -> [TotalRow] {
+        var rows: [TotalRow] = []
+        let vatRegistered = document.seller.isVATRegistered
+        let chargesVAT = document.chargesVAT
+        if totals.globalDiscountHT > 0 {
+            rows.append(TotalRow(label: vatRegistered ? "Sous-total HT" : "Sous-total", value: Money.format(totals.subtotalHT), emphasis: .normal))
+            let discountLabel: String
+            if case .percent(let rate) = document.globalDiscount {
+                discountLabel = "Remise \(Money.formatQuantity(rate)) %"
+            } else {
+                discountLabel = "Remise"
+            }
+            rows.append(TotalRow(label: discountLabel, value: "−" + Money.format(totals.globalDiscountHT), emphasis: .deduction))
+        }
+        if chargesVAT {
+            rows.append(TotalRow(label: "Total HT", value: Money.format(totals.totalHT), emphasis: .strong))
+            for bucket in totals.vatBuckets {
+                let label = totals.vatBuckets.count > 1 || template == .technique
+                    ? "TVA \(Money.formatQuantity(bucket.rate)) % sur \(Money.format(bucket.baseHT))"
+                    : "TVA \(Money.formatQuantity(bucket.rate)) %"
+                rows.append(TotalRow(label: label, value: Money.format(bucket.vatAmount), emphasis: .normal))
+            }
+            let ttcLabel = document.kind == .creditNote ? "Total TTC de l'avoir" : "Total TTC"
+            rows.append(TotalRow(label: ttcLabel, value: Money.format(totals.totalTTC), emphasis: .grand))
+        } else {
+            let label = vatRegistered ? "Total HT" : (document.kind == .creditNote ? "Total de l'avoir" : "Total")
+            rows.append(TotalRow(label: label, value: Money.format(totals.totalHT), emphasis: .grand))
+            if vatRegistered && document.reverseCharge {
+                rows.append(TotalRow(label: "TVA due par le preneur (autoliquidation)", value: "—", emphasis: .normal))
+            }
+        }
+        for deposit in document.depositDeductions {
+            rows.append(TotalRow(label: "Acompte facturé n° \(deposit.invoiceNumber) du \(DateFormatting.short(deposit.issueDate))", value: "−" + Money.format(deposit.amountTTC), emphasis: .deduction))
+        }
+        if !document.depositDeductions.isEmpty {
+            rows.append(TotalRow(label: "Net à payer", value: Money.format(totals.netToPay), emphasis: .grand))
+        }
+        if let payment = request.payment, document.kind != .quote, document.kind != .creditNote, payment.paid > 0 || payment.credited > 0 {
+            if payment.credited > 0 { rows.append(TotalRow(label: "Avoirs imputés", value: "−" + Money.format(payment.credited), emphasis: .deduction)) }
+            if payment.paid > 0 { rows.append(TotalRow(label: "Déjà réglé", value: "−" + Money.format(payment.paid), emphasis: .deduction)) }
+            rows.append(TotalRow(label: "Reste à payer", value: Money.format(payment.balance), emphasis: .strong))
+        }
+        if document.kind == .quote && totals.requestedDepositTTC > 0 {
+            rows.append(TotalRow(label: "Acompte à la commande", value: Money.format(totals.requestedDepositTTC), emphasis: .normal))
+        }
+        return rows
+    }
+
+    func drawTotals() {
+        let rows = totalRows()
+        let rowHeight = template == .technique ? 13.0 : 16.0
+        let grandHeight = template == .creatif ? 30.0 : 22.0
+        let blockHeight = rows.reduce(0) { $0 + ($1.emphasis == .grand ? grandHeight : rowHeight) } + 10
+        let vatTableHeight = template == .technique && document.chargesVAT ? Double(totals.vatBuckets.count + 1) * 13 + 10 : 0
+        ensureSpace(max(blockHeight, vatTableHeight) + 8)
+
+        let width: Double = template == .minimal ? contentWidth * 0.42 : 238
+        let x = right - width
+        var cursor = y
+
+        if template == .technique && document.chargesVAT {
+            drawVATRecap(x: marginLeft, top: y, width: contentWidth - width - 20)
+        }
+        if template == .corporate {
+            page.fillRect(x: x, y: cursor, width: width, height: blockHeight, color: accent.tinted(0.93))
+        }
+        if template == .artisan {
+            page.strokeRect(x: x, y: cursor, width: width, height: blockHeight, color: accent, lineWidth: 0.8)
+        }
+        cursor += 5
+        for row in rows {
+            let height = row.emphasis == .grand ? grandHeight : rowHeight
+            var labelStyle = TextStyle(font: fonts.body, size: bodySize, color: ink)
+            var valueStyle = TextStyle(font: template == .technique ? fonts.mono : fonts.body, size: bodySize, color: ink)
+            switch row.emphasis {
+            case .normal:
+                labelStyle.color = muted
+            case .deduction:
+                labelStyle.color = muted
+                valueStyle.color = muted
+            case .strong:
+                labelStyle.font = fonts.bodyBold
+                valueStyle.font = template == .technique ? fonts.mono : fonts.bodyBold
+            case .grand:
+                labelStyle.font = fonts.heading
+                valueStyle.font = fonts.heading
+                labelStyle.size = bodySize + 1.5
+                valueStyle.size = template == .creatif ? bodySize + 8 : bodySize + 2
+                switch template {
+                case .corporate, .moderne:
+                    page.fillRect(x: x, y: cursor, width: width, height: height, color: accent)
+                    labelStyle.color = accentOnFill
+                    valueStyle.color = accentOnFill
+                case .classique, .artisan, .technique:
+                    page.line(from: (x, cursor), to: (right, cursor), color: accent, lineWidth: 1)
+                    valueStyle.color = accent
+                case .elegant:
+                    page.line(from: (x, cursor), to: (right, cursor), color: accent, lineWidth: 0.6)
+                    page.line(from: (x, cursor + 2), to: (right, cursor + 2), color: accent, lineWidth: 0.3)
+                    labelStyle.font = .timesItalic
+                case .minimal:
+                    page.line(from: (x, cursor), to: (right, cursor), color: ink, lineWidth: 0.4)
+                case .creatif:
+                    valueStyle.color = accent
+                }
+            }
+            let baseline = cursor + height / 2 + labelStyle.size * 0.35
+            let padding = template == .corporate || template == .moderne || template == .artisan ? 8.0 : 0
+            let valueWidth = row.emphasis == .grand && template == .creatif ? width * 0.6 : 100
+            page.text(row.label, x: x + padding, baseline: baseline, width: width - valueWidth - 2 * padding, style: labelStyle, alignment: .left, shrinkToFit: true)
+            page.text(row.value, x: right - valueWidth - padding, baseline: row.emphasis == .grand ? cursor + height / 2 + valueStyle.size * 0.35 : baseline, width: valueWidth, style: valueStyle, alignment: .right, shrinkToFit: true)
+            cursor += height
+        }
+        y = max(cursor + 6, y + vatTableHeight) + 14
+    }
+
+    /// Récapitulatif de TVA (modèle Technique).
+    private func drawVATRecap(x: Double, top: Double, width: Double) {
+        guard width > 160 else { return }
+        let columns: [(String, Double)] = [("Taux", 0.2), ("Base HT", 0.3), ("TVA", 0.25), ("TTC", 0.25)]
+        var rowTop = top
+        func row(_ values: [String], header: Bool) {
+            var cellX = x
+            if header { page.fillRect(x: x, y: rowTop, width: width, height: 13, color: wash) }
+            page.strokeRect(x: x, y: rowTop, width: width, height: 13, color: hairline, lineWidth: 0.5)
+            for (index, value) in values.enumerated() {
+                let cellWidth = width * columns[index].1
+                let style = header ? TextStyle(font: fonts.heading, size: 6.8, color: ink) : TextStyle(font: fonts.mono, size: 7.5, color: ink)
+                page.text(value, x: cellX + 4, baseline: rowTop + 9, width: cellWidth - 8, style: style, alignment: index == 0 ? .left : .right, shrinkToFit: true)
+                cellX += cellWidth
+            }
+            rowTop += 13
+        }
+        row(columns.map(\.0), header: true)
+        for bucket in totals.vatBuckets {
+            row(["\(Money.formatQuantity(bucket.rate)) %", Money.format(bucket.baseHT), Money.format(bucket.vatAmount), Money.format(bucket.baseHT + bucket.vatAmount)], header: false)
+        }
+    }
+
+    // MARK: Blocs de fin de document
+
+    func drawClosingBlocks() {
+        let sectionTitle = TextStyle(font: fonts.heading, size: bodySize, color: template == .minimal ? ink : accent)
+        let text = TextStyle(font: fonts.body, size: bodySize - 0.5, color: ink)
+
+        // Conditions de règlement et coordonnées bancaires (factures et devis avec acompte).
+        var payment: [String] = []
+        if !document.paymentTermsText.trimmed.isEmpty { payment.append(document.paymentTermsText.trimmed) }
+        if document.kind == .invoice || document.kind == .depositInvoice, request.appearance.showBankDetails {
+            let seller = document.seller
+            if !seller.iban.trimmed.isEmpty {
+                var bank = "Virement — IBAN \(formatIBAN(seller.iban))"
+                if !seller.bic.trimmed.isEmpty { bank += " · BIC \(seller.bic.trimmed.uppercased())" }
+                if !seller.bankName.trimmed.isEmpty { bank += " · \(seller.bankName.trimmed)" }
+                payment.append(bank)
+            }
+            if !document.number.isEmpty { payment.append("Merci d'indiquer la référence \(document.number) avec votre règlement.") }
+        }
+        if !payment.isEmpty {
+            flowBlock(title: document.kind == .quote ? "Modalités de paiement" : "Règlement", text: payment.joined(separator: "\n"), titleStyle: sectionTitle, textStyle: text)
+        }
+        if !document.specialConditions.trimmed.isEmpty {
+            flowBlock(title: "Conditions particulières", text: document.specialConditions.trimmed, titleStyle: sectionTitle, textStyle: text)
+        }
+        if !document.notes.trimmed.isEmpty {
+            flowBlock(title: document.kind == .creditNote ? "Motif" : "Notes", text: document.notes.trimmed, titleStyle: sectionTitle, textStyle: text)
+        }
+        let mentions = LegalMentionsBuilder.mentions(for: document, totals: totals)
+        if !mentions.isEmpty {
+            flowBlock(title: "Mentions", text: mentions.joined(separator: "\n"), titleStyle: sectionTitle, textStyle: TextStyle(font: fonts.body, size: bodySize - 1.5, color: muted))
+        }
+        if document.kind == .quote && request.appearance.showSignatureBlock {
+            drawSignatureBlock()
+        }
+    }
+
+    func formatIBAN(_ iban: String) -> String {
+        let compact = iban.uppercased().filter { !$0.isWhitespace }
+        var groups: [String] = []
+        var current = ""
+        for character in compact {
+            current.append(character)
+            if current.count == 4 { groups.append(current); current = "" }
+        }
+        if !current.isEmpty { groups.append(current) }
+        return groups.joined(separator: " ")
+    }
+
+    /// Titre + paragraphe pouvant s'étendre sur plusieurs pages.
+    func flowBlock(title: String, text: String, titleStyle: TextStyle, textStyle: TextStyle) {
+        let lines = TextLayout.wrap(text, style: textStyle, width: contentWidth)
+        // Le titre reste toujours avec au moins deux lignes de texte.
+        ensureSpace(titleStyle.lineHeight + 4 + min(Double(lines.count), 2) * textStyle.lineHeight)
+        page.text(template == .moderne ? title.uppercased() : title, x: marginLeft, baseline: y + titleStyle.size, font: titleStyle.font, size: template == .moderne ? titleStyle.size - 1.5 : titleStyle.size, color: titleStyle.color)
+        y += titleStyle.lineHeight + 4
+        for line in lines {
+            if ensureSpace(textStyle.lineHeight) { /* suite sur la page suivante */ }
+            page.lines([line], x: marginLeft, top: y, width: contentWidth, style: textStyle)
+            y += textStyle.lineHeight
+        }
+        y += 12
+    }
+
+    private func drawSignatureBlock() {
+        let height = 92.0
+        ensureSpace(height + 4)
+        let width = contentWidth * 0.48
+        let x = right - width
+        let emphasis = template == .artisan
+        page.strokeRect(x: x, y: y, width: width, height: height, color: emphasis ? accent : hairline, lineWidth: emphasis ? 1 : 0.6)
+        let titleStyle = TextStyle(font: fonts.bodyBold, size: bodySize, color: emphasis ? accent : ink)
+        page.text("Bon pour accord", x: x + 10, baseline: y + 16, font: titleStyle.font, size: titleStyle.size, color: titleStyle.color)
+        page.paragraph("Date, signature et mention manuscrite « Devis reçu avant l'exécution des travaux, bon pour accord »", x: x + 10, top: y + 22, width: width - 20, style: TextStyle(font: fonts.body, size: 7, color: muted))
+        y += height + 10
+    }
+}
