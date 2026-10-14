@@ -1,0 +1,29 @@
+{
+  "identifier" : "8F2B6C1A-3D4E-4F5A-9B8C-7D6E5F4A3B2C",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    {
+      "displayPrice" : "9.99",
+      "familyShareable" : true,
+      "internalID" : "6740000001",
+      "localizations" : [
+        {
+          "description" : "Débloque les 8 modèles, les statistiques et les exports. Achat unique.",
+          "displayName" : "Version complète",
+          "locale" : "fr_FR"
+        }
+      ],
+      "productID" : "com.devisminute.app.premium",
+      "referenceName" : "Version complète",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6740000000",
+    "_developerTeamID" : "XXXXXXXXXX",
+    "_locale" : "fr_FR",
+    "_storefront" : "FRA"
+  },
+  "subscriptionGroups" : [],
+  "version" : { "major" : 4, "minor" : 0 }
+}
