@@ -20,6 +20,10 @@ Tout reste modifiable dans *Plus › Entreprise et documents*.
 
 Depuis la fiche du devis : *Aperçu et partage du PDF*, *Marquer comme envoyé*, puis *accepté* ou *refusé*. Un devis envoyé dont la date de validité est passée apparaît « Expiré ».
 
+### Faire signer le devis sur l'iPhone
+
+Sur la fiche du devis : *Faire signer le client*. Le client vérifie le montant, coche la mention « Devis reçu avant l'exécution des travaux, bon pour accord » et signe au doigt. Le devis passe en « Accepté », ne peut plus être modifié, et le PDF affiche la signature, le nom, la date et le lieu dans la zone « Bon pour accord ». Une empreinte du devis est enregistrée : la fiche indique si le devis a changé depuis la signature. Il s'agit d'une signature électronique simple (sans certificat).
+
 ## 3. Facturer
 
 - **Depuis un devis** : *Convertir en facture*. Les factures d'acompte déjà émises sur ce devis sont déduites automatiquement.
@@ -56,6 +60,12 @@ Sur une facture émise : *Enregistrer un paiement* (montant, date, moyen). Les p
 *Plus › Entreprise et documents › Modèles et apparence* : 8 modèles, couleur principale, typographie, logo, coordonnées bancaires, zone « Bon pour accord ». *Aperçu avec un document d'exemple* montre le rendu réel.
 
 *Numérotation* : formats personnalisables (par exemple `F-{AAAA}-{N:4}` → F-2026-0001).
+
+## 7 bis. Accueil et apparence
+
+- **Objectif du mois** : touchez la carte « Objectif » de l'accueil pour fixer un chiffre d'affaires HT mensuel. L'anneau se remplit avec les factures émises dans le mois, avoirs déduits.
+- **À encaisser** : la grande carte de l'accueil montre ce qui reste dû et les montants en retard ; touchez-la pour ouvrir les factures.
+- **Icône de l'app** : *Plus › Entreprise et documents › Icône de l'app* (Pétrole, Ivoire ou Nuit).
 
 ## 8. Outils
 
