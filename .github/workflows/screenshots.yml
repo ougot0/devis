@@ -1,0 +1,53 @@
+name: Captures d'écran
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  screenshots:
+    name: Captures sur simulateur iPhone
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compilation (Debug, simulateur)
+        run: |
+          set -o pipefail
+          DEVICE=$(xcrun simctl list devices available | grep -m 1 -o 'iPhone [0-9][0-9]* Pro Max' || xcrun simctl list devices available | grep -m 1 -o 'iPhone [0-9][0-9]*')
+          echo "DEVICE=$DEVICE" >> "$GITHUB_ENV"
+          xcodebuild build -project DevisMinute.xcodeproj -scheme DevisMinute -configuration Debug \
+            -destination "platform=iOS Simulator,name=$DEVICE" -derivedDataPath build CODE_SIGNING_ALLOWED=NO \
+            | grep -E "error:|BUILD" || true
+          test -d build/Build/Products/Debug-iphonesimulator/DevisMinute.app
+      - name: Lancement et captures (mode démonstration, données fictives)
+        run: |
+          mkdir -p shots
+          xcrun simctl boot "$DEVICE" || true
+          xcrun simctl bootstatus "$DEVICE" -b
+          xcrun simctl install "$DEVICE" build/Build/Products/Debug-iphonesimulator/DevisMinute.app
+          xcrun simctl status_bar "$DEVICE" override --time 9:41 --batteryState charged --batteryLevel 100 --cellularBars 4 || true
+          capture() {
+            xcrun simctl terminate "$DEVICE" com.devisminute.app 2>/dev/null || true
+            xcrun simctl launch "$DEVICE" com.devisminute.app -DemoScreen "$1"
+            sleep 9
+            xcrun simctl io "$DEVICE" screenshot "shots/$2.png"
+          }
+          xcrun simctl ui "$DEVICE" appearance light
+          capture onboarding 01-assistant
+          capture dashboard 02-accueil
+          capture quotes 03-devis
+          capture editor 04-editeur-devis
+          capture preview 05-apercu-pdf
+          capture invoices 06-factures
+          capture detail 07-fiche-facture
+          capture customers 08-clients
+          capture statistics 09-statistiques
+          capture more 10-plus
+          xcrun simctl ui "$DEVICE" appearance dark
+          capture dashboard 11-accueil-sombre
+          capture editor 12-editeur-sombre
+          ls -la shots
+      - uses: actions/upload-artifact@v4
+        with:
+          name: captures
+          path: shots/*.png

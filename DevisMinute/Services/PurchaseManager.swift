@@ -54,10 +54,16 @@ final class PurchaseManager {
 
     init() {
         if AppConfiguration.monetization == .paidUpfront { isPremium = true }
+        #if DEBUG
+        if DemoSupport.screen != nil { isPremium = true }
+        #endif
     }
 
     func start() {
         guard AppConfiguration.monetization == .freemium else { return }
+        #if DEBUG
+        if DemoSupport.screen != nil { return }
+        #endif
         updatesTask?.cancel()
         updatesTask = Task { [weak self] in
             for await update in Transaction.updates {

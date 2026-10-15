@@ -13,13 +13,25 @@ struct DevisMinuteApp: App {
         // SwiftData attend que le dossier Application Support existe déjà (absent au tout premier lancement).
         try? FileManager.default.createDirectory(at: URL.applicationSupportDirectory, withIntermediateDirectories: true)
         do {
+            #if DEBUG
+            if DemoSupport.screen != nil {
+                container = try DemoSupport.makeContainer()
+            } else {
+                container = try ModelContainer(for: SettingsEntity.self, CustomerEntity.self, CatalogEntity.self, DocumentEntity.self)
+            }
+            #else
             container = try ModelContainer(for: SettingsEntity.self, CustomerEntity.self, CatalogEntity.self, DocumentEntity.self)
+            #endif
         } catch {
             // Échec d'ouverture de la base : on ne crée surtout pas une base vide par-dessus.
             fatalError("Impossible d'ouvrir la base de données locale : \(error)")
         }
         self.container = container
-        _store = State(initialValue: AppDataStore(context: container.mainContext))
+        let store = AppDataStore(context: container.mainContext)
+        #if DEBUG
+        if DemoSupport.screen != nil { DemoSupport.seed(store) }
+        #endif
+        _store = State(initialValue: store)
         DocumentExportService.purgeTemporaryFiles()
     }
 

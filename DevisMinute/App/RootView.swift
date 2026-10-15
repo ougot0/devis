@@ -1,4 +1,5 @@
 import SwiftUI
+import DevisCore
 
 /// Racine : assistant de configuration au premier lancement, puis navigation par onglets.
 struct RootView: View {
@@ -6,6 +7,9 @@ struct RootView: View {
     @Environment(AppLock.self) private var appLock
     @Environment(\.scenePhase) private var scenePhase
     @State private var selection: AppTab = .home
+    #if DEBUG
+    @State private var demoSheet: DemoSheet?
+    #endif
 
     enum AppTab: Hashable { case home, quotes, invoices, customers, more }
 
@@ -22,7 +26,58 @@ struct RootView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .background && store.appLockEnabled { appLock.lock() }
         }
+        #if DEBUG
+        .onAppear(perform: openDemoScreen)
+        .sheet(item: $demoSheet) { sheet in
+            NavigationStack {
+                switch sheet {
+                case .editor(let record): DocumentEditorView(record: record)
+                case .detail(let id): DocumentDetailView(documentID: id)
+                case .preview(let record): PDFPreviewView(record: record)
+                case .statistics: StatisticsView()
+                }
+            }
+        }
+        #endif
     }
+
+    #if DEBUG
+    enum DemoSheet: Identifiable {
+        case editor(DocumentRecord), detail(UUID), preview(DocumentRecord), statistics
+        var id: String {
+            switch self {
+            case .editor: return "editor"
+            case .detail: return "detail"
+            case .preview: return "preview"
+            case .statistics: return "statistics"
+            }
+        }
+    }
+
+    /// Mode démonstration (captures d'écran) : ouvre directement l'écran demandé.
+    private func openDemoScreen() {
+        guard let screen = DemoSupport.screen else { return }
+        switch screen {
+        case .onboarding, .dashboard: selection = .home
+        case .quotes: selection = .quotes
+        case .invoices: selection = .invoices
+        case .customers: selection = .customers
+        case .more: selection = .more
+        case .statistics:
+            selection = .more
+            demoSheet = .statistics
+        case .editor:
+            selection = .quotes
+            if let id = DemoSupport.featuredQuoteID, let record = store.record(id: id) { demoSheet = .editor(record) }
+        case .detail:
+            selection = .invoices
+            if let id = DemoSupport.featuredInvoiceID { demoSheet = .detail(id) }
+        case .preview:
+            selection = .quotes
+            if let id = DemoSupport.featuredQuoteID, let record = store.record(id: id) { demoSheet = .preview(record) }
+        }
+    }
+    #endif
 
     private var tabs: some View {
         TabView(selection: $selection) {
