@@ -1,76 +1,76 @@
-# DevisMinute : project summary
+# DevisMinute : récapitulatif du projet
 
-*Written on 15/10/2026 to share the project's progress with everyone involved.*
+*Rédigé le 15/10/2026 pour partager l'avancement du projet avec toutes les personnes impliquées.*
 
-## 1. The idea
+## 1. L'idée
 
-An iPhone app that lets French independents (tradespeople, micro-entrepreneurs, freelancers, small businesses) create **quotes and invoices** quickly, track **payments** and keep a **client directory**. Commercial goal: App Store, either a paid app at about €9.99 or free with a one-time unlock. No subscription, no ads.
+Une application iPhone qui permet aux indépendants français (artisans, micro-entrepreneurs, freelances, petites entreprises) de créer rapidement des **devis et des factures**, de suivre les **paiements** et de tenir un **répertoire clients**. Objectif commercial : l'App Store, soit en application payante à environ 9,99 €, soit gratuite avec un déblocage par achat unique. Pas d'abonnement, pas de publicité.
 
-Constraints from the initial brief:
-- native app (Swift / SwiftUI), works **fully offline**, data stays on the iPhone;
-- **no server, no paid API, no AI**, no recurring cost;
-- clean professional design (ivory background, petrol blue, charcoal, no gimmicks);
-- **first quote in under 2 minutes** once the company is set up;
-- serious about **French rules** (mandatory mentions, numbering, VAT, credit notes, e-invoicing reform).
+Les contraintes du cahier des charges de départ :
+- application native (Swift / SwiftUI), qui fonctionne **entièrement hors ligne**, les données restent sur l'iPhone ;
+- **aucun serveur, aucune API payante, aucune IA**, aucun coût récurrent ;
+- un design professionnel et sobre (fond ivoire, bleu pétrole, anthracite, sans effets gadgets) ;
+- **premier devis en moins de 2 minutes** une fois l'entreprise configurée ;
+- un vrai sérieux sur les **règles françaises** (mentions obligatoires, numérotation, TVA, avoirs, réforme de la facturation électronique).
 
-## 2. What exists today
+## 2. Ce qui existe aujourd'hui
 
-| Part | Status |
+| Partie | État |
 |---|---|
-| Calculation engine (exact amounts, VAT per rate, discounts, deposits, payments) | ✅ done and tested |
-| Invoice numbering (chronological, no gaps), issued invoices locked, credit notes | ✅ done and tested |
-| Mandatory-mention checks before issuing an invoice | ✅ done and tested |
-| PDF generator, **8 templates** (Classic, Corporate, Minimal, Craftsman, Creative, Elegant, Technical, Modern) | ✅ done and tested |
-| iPhone app: home, quotes, invoices, clients, catalog, statistics, profitability, settings, backup | ✅ written, compiles, launches on the simulator |
-| Encrypted backup + checked restore, CSV exports/imports | ✅ done and tested |
-| Documentation (building, App Store publishing, user guide, compliance) | ✅ in the `docs/` folder |
-| **Hands-on testing on a real iPhone** | ❌ not done yet |
+| Moteur de calcul (montants exacts, TVA par taux, remises, acomptes, paiements) | ✅ fait et testé |
+| Numérotation des factures (chronologique, sans trou), factures émises verrouillées, avoirs | ✅ fait et testé |
+| Contrôle des mentions obligatoires avant d'émettre une facture | ✅ fait et testé |
+| Générateur de PDF, **8 modèles** (Classique, Corporate, Minimal, Artisan, Créatif, Élégant, Technique, Moderne) | ✅ fait et testé |
+| Application iPhone : accueil, devis, factures, clients, catalogue, statistiques, rentabilité, réglages, sauvegarde | ✅ écrite, compile, se lance sur le simulateur |
+| Sauvegarde chiffrée + restauration vérifiée, exports et imports CSV | ✅ fait et testé |
+| Documentation (compilation, publication App Store, guide utilisateur, conformité) | ✅ dans le dossier `docs/` |
+| **Essai à la main sur un vrai iPhone** | ❌ pas encore fait |
 
-In total, 101 automated tests pass, and they run on every change (GitHub Actions).
+Au total, 101 tests automatiques passent, et ils sont relancés à chaque modification (GitHub Actions).
 
-## 3. Screenshots
+## 3. Captures d'écran
 
-The app on an iPhone simulator, with fictional data.
+L'application sur un simulateur d'iPhone, avec des données fictives.
 
 | | | |
 |---|---|---|
-| ![Wizard](docs/captures/01-assistant.png) | ![Home](docs/captures/02-accueil.png) | ![Quotes](docs/captures/03-devis.png) |
-| Setup wizard | Home | Quote list |
-| ![Editor](docs/captures/04-editeur-devis.png) | ![PDF](docs/captures/05-apercu-pdf.png) | ![Invoices](docs/captures/06-factures.png) |
-| Quote editor | PDF preview | Invoices |
-| ![Invoice page](docs/captures/07-fiche-facture.png) | ![Statistics](docs/captures/09-statistiques.png) | ![Dark mode](docs/captures/11-accueil-sombre.png) |
-| Invoice page | Statistics | Dark mode |
+| ![Assistant](docs/captures/01-assistant.png) | ![Accueil](docs/captures/02-accueil.png) | ![Devis](docs/captures/03-devis.png) |
+| Assistant de configuration | Accueil | Liste des devis |
+| ![Éditeur](docs/captures/04-editeur-devis.png) | ![PDF](docs/captures/05-apercu-pdf.png) | ![Factures](docs/captures/06-factures.png) |
+| Éditeur de devis | Aperçu du PDF | Factures |
+| ![Fiche facture](docs/captures/07-fiche-facture.png) | ![Statistiques](docs/captures/09-statistiques.png) | ![Mode sombre](docs/captures/11-accueil-sombre.png) |
+| Fiche d'une facture | Statistiques | Mode sombre |
 
-The 8 PDF templates:
+Les 8 modèles de PDF :
 
-![The 8 templates](docs/modeles.png)
+![Les 8 modèles](docs/modeles.png)
 
-## 4. Important points to know
+## 4. Points importants à connaître
 
-- **E-invoicing**: since 1 September 2026, every business must be able to *receive* e-invoices through an approved platform. From 1 September 2027, small businesses and micro-entrepreneurs will also have to *send* them that way. The app creates PDFs and **does not connect to an approved platform**. It needs to be marketed honestly as a quote/invoice tool, not as an "e-invoicing" solution. Details: [docs/CONFORMITE.md](docs/CONFORMITE.md).
-- **Payment tracking**: for businesses that charge VAT and sell to private individuals, there's a question around the "certified till software" rule. This needs to be checked with an accountant.
-- **Visible code**: the GitHub repository is currently **public**. Before commercialising, it may be worth making it private.
+- **Facturation électronique** : depuis le 1er septembre 2026, toute entreprise doit pouvoir *recevoir* des factures électroniques via une plateforme agréée. À partir du 1er septembre 2027, les PME et micro-entrepreneurs devront aussi les *émettre* par ce biais. L'application crée des PDF et **n'est pas reliée à une plateforme agréée**. Il faudra donc la présenter honnêtement comme un outil de devis et factures, pas comme une solution de « facturation électronique ». Détails : [docs/CONFORMITE.md](docs/CONFORMITE.md).
+- **Suivi des paiements** : pour les entreprises qui facturent la TVA et vendent à des particuliers, une question se pose autour de la règle sur les « logiciels de caisse certifiés ». À vérifier avec un expert-comptable.
+- **Code visible** : le dépôt GitHub est actuellement **public**. Avant de commercialiser, il vaudra peut-être mieux le passer en privé.
 
-## 5. What remains to be done
+## 5. Ce qu'il reste à faire
 
-1. Test the app hands-on on a Mac (Xcode) and then on a real iPhone.
-2. Fix two small defects spotted on the screenshots:
-   - the setup wizard cuts off long labels;
-   - a mistake in the demo data (only affects the fake data).
-3. Create an Apple Developer account (€99/year), a final icon, a privacy page.
-4. Have the legal mentions reviewed by an accountant.
-5. Choose the business model and the price.
+1. Tester l'application à la main sur un Mac (Xcode), puis sur un vrai iPhone.
+2. Corriger deux petits défauts repérés sur les captures :
+   - l'assistant de configuration coupe les libellés trop longs ;
+   - une erreur dans les données de démonstration (ne concerne que les fausses données).
+3. Créer un compte Apple Developer (99 €/an), une icône définitive et une page de confidentialité.
+4. Faire relire les mentions légales par un expert-comptable.
+5. Choisir le modèle commercial et le prix.
 
-## 6. Questions to settle together
+## 6. Questions à trancher ensemble
 
-- Paid at €9.99, or free plus a one-time purchase? If free, what should the free version include?
-- Which user to target first (tradespeople/construction, freelancers, everyone)?
-- Is it worth connecting an approved e-invoicing platform later? That service would be paid.
-- Who has a Mac to test and publish?
+- Payante à 9,99 €, ou gratuite avec un achat unique ? Si gratuite, qu'est-ce que la version gratuite doit inclure ?
+- Quel utilisateur viser en premier (artisans du bâtiment, freelances, tout le monde) ?
+- Vaut-il la peine de se connecter plus tard à une plateforme agréée de facturation électronique ? Ce service serait payant.
+- Qui a un Mac pour tester et publier ?
 
-## 7. Where to find what
+## 7. Où trouver quoi
 
-- Full code: this repository (`DevisMinute/` for the app, `DevisMinuteKit/` for the engine).
-- [User guide](docs/GUIDE_UTILISATEUR.md): how the app works, screen by screen.
-- [App Store publishing](docs/PUBLICATION.md) and the [proposed App Store listing](docs/FICHE_APP_STORE.md).
-- [Build](docs/BUILD.md): how to compile and test.
+- Le code complet : ce dépôt (`DevisMinute/` pour l'application, `DevisMinuteKit/` pour le moteur).
+- [Guide utilisateur](docs/GUIDE_UTILISATEUR.md) : le fonctionnement de l'application, écran par écran.
+- [Publication sur l'App Store](docs/PUBLICATION.md) et la [proposition de fiche App Store](docs/FICHE_APP_STORE.md).
+- [Compilation](docs/BUILD.md) : comment compiler et tester.
