@@ -110,10 +110,13 @@ public struct RenderRequest: Sendable {
     public var isDraft: Bool
     /// QR code du lien de paiement (`document.paymentLink`), en JPEG, généré par l'application.
     public var paymentQRCodeJPEG: Data?
+    /// Signature du client : imprimée dans la zone « Bon pour accord » d'un devis.
+    public var signature: QuoteSignature?
     public var generatedAt: Date
 
-    public init(document: BusinessDocument, appearance: DocumentAppearance, logoJPEG: Data? = nil, payment: PaymentSummary? = nil, isDraft: Bool = false, generatedAt: Date = Date(), paymentQRCodeJPEG: Data? = nil) {
+    public init(document: BusinessDocument, appearance: DocumentAppearance, logoJPEG: Data? = nil, payment: PaymentSummary? = nil, isDraft: Bool = false, generatedAt: Date = Date(), paymentQRCodeJPEG: Data? = nil, signature: QuoteSignature? = nil) {
         self.paymentQRCodeJPEG = paymentQRCodeJPEG
+        self.signature = signature
         self.document = document
         self.appearance = appearance
         self.logoJPEG = logoJPEG

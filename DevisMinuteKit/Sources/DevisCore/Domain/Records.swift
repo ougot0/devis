@@ -80,6 +80,8 @@ public struct DocumentRecord: Codable, Sendable, Equatable, Identifiable {
     public var issuedAt: Date?
     /// Facture importée d'un autre logiciel (archive) : pas de sceau, le document d'origine fait foi.
     public var isImported: Bool?
+    /// Signature du client (devis acceptés sur l'iPhone).
+    public var signature: QuoteSignature?
 
     public var id: UUID { document.id }
 

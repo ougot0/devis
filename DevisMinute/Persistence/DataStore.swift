@@ -281,6 +281,21 @@ final class AppDataStore {
         try commit()
     }
 
+    /// Signature du client sur l'iPhone : le devis passe en « Accepté » et son contenu est figé.
+    func signQuote(id: UUID, signerName: String, place: String, imageJPEG: Data, signedAt: Date = Date()) throws -> DocumentRecord {
+        guard let entity = entity(id: id), var record = entity.record, let current = record.quoteStatus else { throw StoreError.notFound }
+        let effective = QuoteLifecycle.effectiveStatus(current, validUntil: record.document.validUntil, today: signedAt)
+        guard QuoteLifecycle.canSign(effective) else { throw SignatureError.cannotSign(status: effective.label) }
+        // Un brouillon reprend les coordonnées actuelles de l'entreprise, comme sur son aperçu PDF.
+        if current == .draft { record.document.seller = company }
+        record.signature = try QuoteSignature.make(for: record.document, signerName: signerName, place: place, imageJPEG: imageJPEG, signedAt: signedAt)
+        record.quoteStatus = .accepted
+        record.updatedAt = signedAt
+        entity.apply(record)
+        try commit()
+        return record
+    }
+
     /// Facture brouillon issue d'un devis ; les factures d'acompte émises sur ce devis sont déduites.
     func convertToInvoice(quoteID: UUID) throws -> DocumentRecord {
         guard let quote = record(id: quoteID), let status = quote.quoteStatus else { throw StoreError.notFound }

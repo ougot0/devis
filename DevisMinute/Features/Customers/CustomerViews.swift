@@ -31,11 +31,15 @@ struct CustomerListView: View {
             }
             ForEach(filtered) { entity in
                 NavigationLink { CustomerDetailView(customerID: entity.id) } label: {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(entity.name).foregroundStyle(entity.isArchived ? Theme.neutral : Theme.ink)
-                        Text([CustomerKind(rawValue: entity.kindRaw)?.label ?? "", entity.city, entity.isArchived ? "archivé" : ""]
-                            .filter { !$0.isEmpty }.joined(separator: " · "))
-                            .font(.footnote).foregroundStyle(Theme.neutral)
+                    HStack(spacing: Theme.Space.m) {
+                        InitialsAvatar(name: entity.name, size: 40)
+                            .opacity(entity.isArchived ? 0.5 : 1)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(entity.name).foregroundStyle(entity.isArchived ? Theme.neutral : Theme.ink)
+                            Text([CustomerKind(rawValue: entity.kindRaw)?.label ?? "", entity.city, entity.isArchived ? "archivé" : ""]
+                                .filter { !$0.isEmpty }.joined(separator: " · "))
+                                .font(.footnote).foregroundStyle(Theme.neutral)
+                        }
                     }
                 }
             }
@@ -74,9 +78,12 @@ struct CustomerDetailView: View {
             if let customer {
                 let snapshot = customer.snapshot
                 Section {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(snapshot.name).font(.title3.weight(.semibold))
-                        Text(snapshot.kind.label).font(.footnote).foregroundStyle(Theme.neutral)
+                    HStack(spacing: Theme.Space.m) {
+                        InitialsAvatar(name: snapshot.name, size: 56)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(snapshot.name).font(.title3.weight(.semibold))
+                            Text(snapshot.kind.label).font(.footnote).foregroundStyle(Theme.neutral)
+                        }
                     }
                     if !snapshot.contactName.isEmpty { LabeledContent("Contact", value: snapshot.contactName) }
                     if !snapshot.address.isEmpty { LabeledContent("Adresse", value: snapshot.address.lines.joined(separator: "\n")) }

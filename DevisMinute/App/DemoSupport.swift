@@ -1,5 +1,6 @@
 #if DEBUG
 import Foundation
+import CoreGraphics
 import SwiftData
 import DevisCore
 import DevisPDF
@@ -9,7 +10,7 @@ import DevisPDF
 /// de données fictives, puis ouvre l'écran demandé. Sert aux captures d'écran automatiques.
 enum DemoSupport {
     enum Screen: String {
-        case onboarding, dashboard, quotes, invoices, customers, more, editor, detail, preview, statistics
+        case onboarding, dashboard, quotes, invoices, customers, more, editor, detail, preview, statistics, signature, signed, signedpdf
     }
 
     static var screen: Screen? {
@@ -28,6 +29,21 @@ enum DemoSupport {
     /// Documents mis en avant par les écrans de démonstration.
     @MainActor static var featuredQuoteID: UUID?
     @MainActor static var featuredInvoiceID: UUID?
+    @MainActor static var signedQuoteID: UUID?
+
+    /// Signature manuscrite fictive (courbe générée), pour les captures.
+    static var demoStrokes: [[CGPoint]] {
+        let main: [CGPoint] = stride(from: 0.0, through: 1.0, by: 0.004).map { t in
+            let x = 30 + t * 230
+            let envelope = sin(t * .pi) * 0.7 + 0.3
+            let y = 95 - 34 * envelope * sin(t * 15) - 10 * cos(t * 31) * envelope
+            return CGPoint(x: x, y: y)
+        }
+        let underline: [CGPoint] = stride(from: 0.0, through: 1.0, by: 0.02).map { t in
+            CGPoint(x: 60 + t * 220, y: 138 - 14 * sin(t * .pi * 0.9))
+        }
+        return [main, underline]
+    }
 
     @MainActor
     static func seed(_ store: AppDataStore) {
@@ -63,7 +79,11 @@ enum DemoSupport {
         for item in catalog { try? store.save(item: item) }
 
         func lines(_ specs: [(String, Decimal, Decimal, Decimal, OperationNature)]) -> [DocumentLine] {
-            specs.map { DocumentLine(designation: $0.0, quantity: $0.1, unit: $0.4 == .goods ? "m²" : "h", unitPriceHT: $0.2, vatRate: $0.3, nature: $0.4) }
+            specs.map { spec in
+                let name = spec.0.lowercased()
+                let unit = spec.4 == .services ? "h" : (name.contains("parquet") || name.contains("habillage") ? "m²" : "u")
+                return DocumentLine(designation: spec.0, quantity: spec.1, unit: unit, unitPriceHT: spec.2, vatRate: spec.3, nature: spec.4)
+            }
         }
 
         // Factures émises sur les derniers mois (ordre chronologique), avec paiements.
@@ -112,7 +132,12 @@ enum DemoSupport {
             if status != .draft { try? store.setQuoteStatus(id: record.id, to: .sent) }
             if status == .accepted || status == .refused { try? store.setQuoteStatus(id: record.id, to: status) }
             featuredQuoteID = record.id
+            // Le devis du dressing a été signé par la cliente sur l'iPhone.
+            if title.hasPrefix("Dressing"), let jpeg = SignatureRenderer.jpeg(strokes: demoStrokes, canvasSize: CGSize(width: 340, height: 200)) {
+                signedQuoteID = (try? store.signQuote(id: record.id, signerName: "Claire Leroy", place: "Lyon", imageJPEG: jpeg, signedAt: daysAgo(10)))?.id
+            }
         }
+        UserDefaults.standard.set("9000", forKey: "monthlyGoalHT")
     }
 }
 #endif

@@ -186,3 +186,27 @@ final class PaymentBlockTests: XCTestCase {
         XCTAssertFalse(String(decoding: DocumentPDFRenderer.render(RenderRequest(document: document, appearance: DocumentAppearance())).data, as: UTF8.self).contains("Payer en ligne"))
     }
 }
+
+final class SignatureBlockTests: XCTestCase {
+    func testSignedQuotePrintsSignatureAndMention() throws {
+        let document = SampleData.quote(lineCount: 3)
+        let signature = try QuoteSignature.make(for: document, signerName: "Paul Petit", place: "Lyon", imageJPEG: SampleData.logoJPEG, signedAt: Date(timeIntervalSince1970: 1_792_000_000))
+        let result = DocumentPDFRenderer.render(RenderRequest(document: document, appearance: DocumentAppearance(template: .artisan), signature: signature))
+        let text = String(decoding: result.data, as: UTF8.self)
+        XCTAssertTrue(text.contains("par Paul Petit"))
+        XCTAssertTrue(text.contains("Lyon"))
+        XCTAssertTrue(text.contains("bon pour accord"))
+        XCTAssertFalse(text.contains("Date, signature et mention manuscrite"), "La zone vide est remplacée")
+        XCTAssertEqual(text.components(separatedBy: "/Subtype /Image").count - 1, 1, "Tracé de la signature intégré")
+        if let directory = ProcessInfo.processInfo.environment["DEVIS_PDF_OUTPUT"] {
+            try result.data.write(to: URL(fileURLWithPath: directory).appendingPathComponent("devis-signe.pdf"))
+        }
+    }
+
+    func testSignatureIsIgnoredOnInvoices() throws {
+        let quote = SampleData.quote(lineCount: 1)
+        let signature = try QuoteSignature.make(for: quote, signerName: "Paul Petit", imageJPEG: SampleData.logoJPEG)
+        let result = DocumentPDFRenderer.render(RenderRequest(document: SampleData.invoice(lineCount: 1), appearance: DocumentAppearance(), signature: signature))
+        XCTAssertFalse(String(decoding: result.data, as: UTF8.self).contains("par Paul Petit"))
+    }
+}

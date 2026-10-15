@@ -184,7 +184,9 @@ extension RenderSession {
         if !mentions.isEmpty {
             flowBlock(title: "Mentions", text: mentions.joined(separator: "\n"), titleStyle: sectionTitle, textStyle: TextStyle(font: fonts.body, size: bodySize - 1.5, color: muted))
         }
-        if document.kind == .quote && request.appearance.showSignatureBlock {
+        if document.kind == .quote, let signature = request.signature, let image = PDFImage(jpegData: signature.imageJPEG) {
+            drawSignedBlock(signature, image: image)
+        } else if document.kind == .quote && request.appearance.showSignatureBlock {
             drawSignatureBlock()
         }
     }
@@ -258,5 +260,42 @@ extension RenderSession {
         page.text("Bon pour accord", x: x + 10, baseline: y + 16, font: titleStyle.font, size: titleStyle.size, color: titleStyle.color)
         page.paragraph("Date, signature et mention manuscrite « Devis reçu avant l'exécution des travaux, bon pour accord »", x: x + 10, top: y + 22, width: width - 20, style: TextStyle(font: fonts.body, size: 7, color: muted))
         y += height + 10
+    }
+
+    /// Zone « Bon pour accord » remplie : mention, signataire, date et tracé de la signature.
+    private func drawSignedBlock(_ signature: QuoteSignature, image: PDFImage) {
+        let height = 118.0
+        ensureSpace(height + 4)
+        let width = contentWidth * 0.48
+        let x = right - width
+        let top = y
+        page.strokeRect(x: x, y: top, width: width, height: height, color: accent, lineWidth: 1)
+        page.text("Bon pour accord", x: x + 10, baseline: top + 16, font: fonts.bodyBold, size: bodySize, color: accent)
+        let small = TextStyle(font: fonts.body, size: 7.5, color: ink)
+        var details = "Signé le \(DateFormatting.short(signature.signedAt))"
+        if !signature.place.isEmpty { details += " à \(signature.place)" }
+        details += " par \(signature.signerName)"
+        let detailLines = TextLayout.wrap(details, style: small, width: width - 20)
+        page.lines(detailLines, x: x + 10, top: top + 22, width: width - 20, style: small)
+        var cursor = top + 22 + Double(detailLines.count) * small.lineHeight + 1
+        let mention = TextStyle(font: fonts.italic, size: 7, color: muted)
+        let mentionLines = TextLayout.wrap("« \(QuoteSignature.acceptanceMention) »", style: mention, width: width - 20)
+        page.lines(mentionLines, x: x + 10, top: cursor, width: width - 20, style: mention)
+        cursor += Double(mentionLines.count) * mention.lineHeight + 3
+        // Tracé : ajusté dans l'espace restant en conservant ses proportions.
+        let boxWidth = width - 20
+        let boxHeight = top + height - 6 - cursor
+        if boxHeight > 10, image.pixelWidth > 0, image.pixelHeight > 0 {
+            let ratio = Double(image.pixelWidth) / Double(image.pixelHeight)
+            var drawWidth = boxWidth
+            var drawHeight = drawWidth / ratio
+            if drawHeight > boxHeight {
+                drawHeight = boxHeight
+                drawWidth = drawHeight * ratio
+            }
+            let handle = builder.register(image: image)
+            page.image(handle, x: x + 10, y: cursor, width: drawWidth, height: drawHeight)
+        }
+        y = top + height + 10
     }
 }

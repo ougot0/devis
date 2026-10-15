@@ -52,7 +52,8 @@ struct DocumentRow: View {
         let document = record.document
         let status = DocumentStatusInfo(record: record, allRecords: allRecords)
         let totals = DocumentCalculator.totals(for: document)
-        HStack(alignment: .firstTextBaseline, spacing: Theme.Space.m) {
+        HStack(alignment: .center, spacing: Theme.Space.m) {
+            InitialsAvatar(name: document.customer.name.isEmpty ? "?" : document.customer.name, size: 38)
             VStack(alignment: .leading, spacing: 3) {
                 Text(document.customer.name.isEmpty ? "Client non renseigné" : document.customer.name)
                     .font(.body.weight(.medium))

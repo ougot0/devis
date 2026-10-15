@@ -78,6 +78,12 @@ public enum QuoteLifecycle {
         return calendar.startOfDay(for: today) > calendar.startOfDay(for: validUntil) ? .expired : status
     }
 
+    /// Un devis peut être signé par le client tant qu'il n'est ni accepté ni refusé
+    /// (y compris un brouillon signé sur place, ou un devis expiré que le client accepte quand même).
+    public static func canSign(_ status: QuoteStatus) -> Bool {
+        status == .draft || status == .sent || status == .expired
+    }
+
     public static func canConvertToInvoice(_ status: QuoteStatus) -> Bool {
         status == .sent || status == .accepted
     }

@@ -2,8 +2,8 @@ import SwiftUI
 import DevisCore
 
 /// Direction artistique DevisMinute : fond ivoire, texte anthracite, bleu pétrole,
-/// une seule couleur secondaire (ocre discret) réservée aux actions importantes.
-/// Pas de dégradés, pas d'ombres portées, peu de cartes arrondies.
+/// une couleur secondaire (ocre) réservée aux actions importantes.
+/// Cartes à grands coins arrondis sur l'accueil, pastilles d'état teintées, pas d'ombres portées.
 enum Theme {
     static let ivory = Color("Ivory")
     static let ink = Color("Ink")
@@ -67,14 +67,39 @@ struct StatusBadge: View {
         }
     }
 
+    var symbol: String {
+        switch tone {
+        case .neutral: return "circle.dashed"
+        case .info: return "clock"
+        case .success: return "checkmark"
+        case .warning: return "hourglass"
+        case .danger: return "exclamationmark"
+        }
+    }
+
     var body: some View {
-        Text(text)
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(color)
-            .padding(.horizontal, 6)
-            .padding(.vertical, 2)
-            .overlay(RoundedRectangle(cornerRadius: 3).stroke(color.opacity(0.6), lineWidth: 1))
-            .accessibilityLabel("État : \(text)")
+        Label {
+            Text(text)
+        } icon: {
+            Image(systemName: symbol).font(.system(size: 9, weight: .bold))
+        }
+        .labelStyle(BadgeLabelStyle())
+        .font(.caption.weight(.semibold))
+        .foregroundStyle(color)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 3)
+        .background(color.opacity(0.13), in: Capsule())
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("État : \(text)")
+    }
+}
+
+private struct BadgeLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: 4) {
+            configuration.icon
+            configuration.title
+        }
     }
 }
 
@@ -117,7 +142,22 @@ struct SecondaryButtonStyle: ButtonStyle {
     }
 }
 
+/// Carte de l'accueil : surface claire, grands coins arrondis, fin liseré.
+struct CardModifier: ViewModifier {
+    var fill: Color = Theme.surface
+
+    func body(content: Content) -> some View {
+        content
+            .padding(Theme.Space.l)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(fill, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(Theme.hairline.opacity(fill == Theme.surface ? 1 : 0), lineWidth: 1))
+    }
+}
+
 extension View {
+    func card(fill: Color = Theme.surface) -> some View { modifier(CardModifier(fill: fill)) }
+
     /// Fond ivoire de l'application.
     func appBackground() -> some View {
         scrollContentBackground(.hidden).background(Theme.ivory)

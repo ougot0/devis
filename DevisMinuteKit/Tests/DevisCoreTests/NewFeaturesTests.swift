@@ -118,3 +118,48 @@ final class HistoryImportTests: XCTestCase {
         XCTAssertNil(HistoryImporter.parseDate("hier"))
     }
 }
+
+final class QuoteSignatureTests: XCTestCase {
+    private func quote() -> BusinessDocument {
+        var document = Fixtures.invoice(lines: [Fixtures.line("Pose", qty: "2", price: "100")])
+        document.kind = .quote
+        return document
+    }
+
+    func testSignatureIsBoundToContent() throws {
+        var document = quote()
+        let signature = try QuoteSignature.make(for: document, signerName: "  Paul Petit ", place: "Lyon", imageJPEG: Data([0xFF, 0xD8, 0xFF]))
+        XCTAssertEqual(signature.signerName, "Paul Petit")
+        XCTAssertTrue(signature.matches(document))
+        document.lines[0].quantity = 3
+        XCTAssertFalse(signature.matches(document), "Toute modification du devis est détectée")
+    }
+
+    func testSignatureRequirements() {
+        XCTAssertThrowsError(try QuoteSignature.make(for: quote(), signerName: " ", imageJPEG: Data([1]))) {
+            XCTAssertEqual($0 as? SignatureError, .missingSignerName)
+        }
+        XCTAssertThrowsError(try QuoteSignature.make(for: quote(), signerName: "Paul", imageJPEG: Data())) {
+            XCTAssertEqual($0 as? SignatureError, .missingDrawing)
+        }
+        XCTAssertThrowsError(try QuoteSignature.make(for: Fixtures.invoice(lines: [Fixtures.line("Pose", qty: "1", price: "1")]), signerName: "Paul", imageJPEG: Data([1]))) {
+            XCTAssertEqual($0 as? SignatureError, .notAQuote)
+        }
+    }
+
+    func testWhichQuotesCanBeSigned() {
+        XCTAssertTrue(QuoteLifecycle.canSign(.draft))
+        XCTAssertTrue(QuoteLifecycle.canSign(.sent))
+        XCTAssertTrue(QuoteLifecycle.canSign(.expired))
+        XCTAssertFalse(QuoteLifecycle.canSign(.accepted))
+        XCTAssertFalse(QuoteLifecycle.canSign(.refused))
+    }
+
+    func testOldRecordsDecodeWithoutSignature() throws {
+        let record = DocumentRecord(document: quote())
+        var json = try JSONSerialization.jsonObject(with: JSONEncoder().encode(record)) as! [String: Any]
+        json.removeValue(forKey: "signature")
+        let decoded = try JSONDecoder().decode(DocumentRecord.self, from: JSONSerialization.data(withJSONObject: json))
+        XCTAssertNil(decoded.signature)
+    }
+}

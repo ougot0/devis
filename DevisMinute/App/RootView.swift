@@ -35,6 +35,7 @@ struct RootView: View {
                 case .detail(let id): DocumentDetailView(documentID: id)
                 case .preview(let record): PDFPreviewView(record: record)
                 case .statistics: StatisticsView()
+                case .signature(let record): SignatureSheet(record: record, initialStrokes: DemoSupport.demoStrokes) {}
                 }
             }
         }
@@ -43,9 +44,10 @@ struct RootView: View {
 
     #if DEBUG
     enum DemoSheet: Identifiable {
-        case editor(DocumentRecord), detail(UUID), preview(DocumentRecord), statistics
+        case editor(DocumentRecord), detail(UUID), preview(DocumentRecord), statistics, signature(DocumentRecord)
         var id: String {
             switch self {
+            case .signature: return "signature"
             case .editor: return "editor"
             case .detail: return "detail"
             case .preview: return "preview"
@@ -75,6 +77,15 @@ struct RootView: View {
         case .preview:
             selection = .quotes
             if let id = DemoSupport.featuredQuoteID, let record = store.record(id: id) { demoSheet = .preview(record) }
+        case .signature:
+            selection = .quotes
+            if let id = DemoSupport.featuredQuoteID, let record = store.record(id: id) { demoSheet = .signature(record) }
+        case .signed:
+            selection = .quotes
+            if let id = DemoSupport.signedQuoteID { demoSheet = .detail(id) }
+        case .signedpdf:
+            selection = .quotes
+            if let id = DemoSupport.signedQuoteID, let record = store.record(id: id) { demoSheet = .preview(record) }
         }
     }
     #endif

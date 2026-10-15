@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import DevisCore
 
 /// Fiche d'un document : aperçu, statut, actions, paiements, intégrité.
@@ -16,9 +17,10 @@ struct DocumentDetailView: View {
     @State private var error: PresentedError?
     @State private var confirmIssue = false
     @State private var confirmDelete = false
+    @State private var celebration: Celebration?
 
     enum SheetKind: Identifiable {
-        case preview, payment, creditNote, deposit
+        case preview, payment, creditNote, deposit, signature
         var id: Int { hashValue }
     }
 
@@ -44,11 +46,14 @@ struct DocumentDetailView: View {
                     case .payment: PaymentSheet(record: record, allRecords: allRecords)
                     case .creditNote: CreditNoteSheet(record: record) { created in openEditorAfterDismiss(created) }
                     case .deposit: DepositSheet(record: record) { created in openEditorAfterDismiss(created) }
+                    case .signature: SignatureSheet(record: record) {}
                     }
                 }
             }
         }
         .errorAlert($error)
+        .celebration($celebration)
+        .animation(.easeInOut(duration: 0.2), value: celebration)
     }
 
     /// Ouvre l'éditeur une fois la feuille précédente refermée (deux feuilles ne peuvent se chevaucher).
@@ -60,8 +65,24 @@ struct DocumentDetailView: View {
     }
 
     private func reload() {
+        let previous = record
         record = store.record(id: documentID)
         allRecords = store.allRecords()
+        if let previous, let current = record { celebrateIfNeeded(from: previous, to: current) }
+    }
+
+    /// Fête la signature d'un devis ou le dernier paiement d'une facture.
+    private func celebrateIfNeeded(from old: DocumentRecord, to new: DocumentRecord) {
+        if old.signature == nil, let signature = new.signature {
+            let total = DocumentCalculator.totals(for: new.document).totalTTC
+            celebration = Celebration(title: "Devis signé !", subtitle: "\(signature.signerName) a accepté \(Money.format(total)).")
+            return
+        }
+        guard new.isIssuedInvoice, new.document.kind != .creditNote, new.payments.count > old.payments.count else { return }
+        let ledger = Accounting.ledger(for: new, in: allRecords)
+        if ledger.balance == 0 {
+            celebration = Celebration(title: "Facture payée !", subtitle: "\(Money.format(ledger.totalPaid)) encaissés · \(new.document.customer.name)")
+        }
     }
 
     @ViewBuilder
@@ -111,6 +132,10 @@ struct DocumentDetailView: View {
                 }
             }
 
+            if let signature = record.signature {
+                signatureSection(signature, document: document)
+            }
+
             if record.isIssuedInvoice && !record.imported {
                 integritySection(record)
             }
@@ -145,6 +170,10 @@ struct DocumentDetailView: View {
         let document = record.document
         if document.kind == .quote, let status = record.quoteStatus {
             let effective = QuoteLifecycle.effectiveStatus(status, validUntil: document.validUntil, today: Date())
+            if QuoteLifecycle.canSign(effective) {
+                Button { sheet = .signature } label: { Label("Faire signer le client", systemImage: "signature") }
+                    .foregroundStyle(Theme.ochre)
+            }
             if status.isEditable {
                 Button { editor = DashboardView.EditorTarget(record: record) } label: { Label("Modifier", systemImage: "pencil") }
             }
@@ -218,6 +247,31 @@ struct DocumentDetailView: View {
             Text("Paiements")
         } footer: {
             Text("Les paiements sont déclarés par vous : DevisMinute n'est relié à aucune banque.")
+        }
+    }
+
+    private func signatureSection(_ signature: QuoteSignature, document: BusinessDocument) -> some View {
+        Section {
+            if let image = UIImage(data: signature.imageJPEG) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxHeight: 90)
+                    .frame(maxWidth: .infinity)
+                    .padding(Theme.Space.s)
+                    .background(Color.white, in: RoundedRectangle(cornerRadius: 8))
+                    .accessibilityLabel("Signature de \(signature.signerName)")
+            }
+            LabeledContent("Signé par", value: signature.signerName)
+            LabeledContent("Le", value: signature.signedAt.formatted(date: .abbreviated, time: .shortened))
+            if !signature.place.isEmpty { LabeledContent("À", value: signature.place) }
+            let intact = signature.matches(document)
+            Label(intact ? "Devis identique à la version signée" : "Le devis a changé depuis la signature", systemImage: intact ? "checkmark.seal" : "exclamationmark.triangle")
+                .foregroundStyle(intact ? Theme.success : Theme.danger)
+        } header: {
+            Text("Bon pour accord")
+        } footer: {
+            Text("Signature électronique simple recueillie sur cet iPhone. Elle figure sur le PDF du devis.")
         }
     }
 

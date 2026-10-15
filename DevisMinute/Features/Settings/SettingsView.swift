@@ -15,6 +15,7 @@ struct SettingsView: View {
                 NavigationLink("Modèles et apparence") { AppearanceSettingsView() }
                 NavigationLink("Numérotation") { NumberingSettingsView() }
             }
+            AppIconSection()
             Section {
                 Toggle("Verrouiller avec \(appLock.biometryLabel)", isOn: Binding(get: { store.appLockEnabled }, set: { try? store.setAppLock($0) }))
             } header: {
@@ -333,5 +334,67 @@ extension Color {
         var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
         uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
         return PDFColor(red: Double(min(max(red, 0), 1)), green: Double(min(max(green, 0), 1)), blue: Double(min(max(blue, 0), 1))).hex
+    }
+}
+
+/// Choix de l'icône de l'application sur l'écran d'accueil.
+struct AppIconSection: View {
+    @State private var current = UIApplication.shared.alternateIconName
+    @State private var error: PresentedError?
+
+    private struct Option: Identifiable {
+        let name: String?
+        let label: String
+        let preview: String
+        var id: String { name ?? "default" }
+    }
+
+    private let options = [
+        Option(name: nil, label: "Pétrole", preview: "IconPreview-Petrole"),
+        Option(name: "AppIcon-Ivoire", label: "Ivoire", preview: "IconPreview-Ivoire"),
+        Option(name: "AppIcon-Nuit", label: "Nuit", preview: "IconPreview-Nuit"),
+    ]
+
+    var body: some View {
+        Section("Icône de l'app") {
+            HStack(spacing: Theme.Space.l) {
+                ForEach(options) { option in
+                    Button { select(option.name) } label: {
+                        VStack(spacing: Theme.Space.xs) {
+                            Image(option.preview)
+                                .resizable()
+                                .frame(width: 60, height: 60)
+                                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                        .stroke(current == option.name ? Theme.petrol : .clear, lineWidth: 3)
+                                        .padding(-4)
+                                )
+                            Text(option.label)
+                                .font(.caption.weight(current == option.name ? .semibold : .regular))
+                                .foregroundStyle(current == option.name ? Theme.petrol : Theme.neutral)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Icône \(option.label)")
+                    .accessibilityAddTraits(current == option.name ? .isSelected : [])
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, Theme.Space.s)
+        }
+        .errorAlert($error)
+    }
+
+    private func select(_ name: String?) {
+        guard UIApplication.shared.supportsAlternateIcons, name != current else { return }
+        Task { @MainActor in
+            do {
+                try await UIApplication.shared.setAlternateIconName(name)
+                current = name
+            } catch {
+                self.error = PresentedError(error)
+            }
+        }
     }
 }

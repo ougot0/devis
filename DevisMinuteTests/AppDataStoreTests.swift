@@ -148,4 +148,22 @@ final class AppDataStoreTests: XCTestCase {
         XCTAssertEqual(store.makeInvoice(customer: nil).document.paymentLink, "https://buy.stripe.com/test_123")
         XCTAssertNil(store.makeQuote(customer: nil).document.paymentLink)
     }
+
+    func testSignedQuoteIsAcceptedFrozenAndSurvivesBackup() throws {
+        var quote = store.makeQuote(customer: try customer())
+        quote.document.lines = [DocumentLine(designation: "Pose", quantity: 2, unitPriceHT: 300, vatRate: 20)]
+        try store.save(quote)
+        let jpeg = try XCTUnwrap(SignatureRenderer.jpeg(strokes: [[CGPoint(x: 10, y: 10), CGPoint(x: 80, y: 40), CGPoint(x: 140, y: 12)]], canvasSize: CGSize(width: 200, height: 100)))
+        let signed = try store.signQuote(id: quote.id, signerName: "Paul Petit", place: "Lyon", imageJPEG: jpeg)
+        XCTAssertEqual(signed.quoteStatus, .accepted)
+        XCTAssertEqual(signed.signature?.signerName, "Paul Petit")
+        XCTAssertTrue(signed.signature?.matches(signed.document) ?? false)
+        XCTAssertThrowsError(try store.signQuote(id: quote.id, signerName: "Autre", place: "", imageJPEG: jpeg), "Un devis accepté ne se signe pas deux fois")
+        // La signature est imprimée sur le PDF et conservée dans les sauvegardes.
+        let pdf = DocumentExportService.renderPDF(for: signed, store: store)
+        XCTAssertGreaterThan(pdf.pageCount, 0)
+        let snapshot = store.makeSnapshot(appVersion: "test")
+        XCTAssertNotNil(snapshot.documents.first { $0.id == quote.id }?.signature)
+    }
 }
+

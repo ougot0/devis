@@ -46,6 +46,9 @@ jobs:
           capture customers 08-clients
           capture statistics 09-statistiques
           capture more 10-plus
+          capture signature 13-signature-client
+          capture signed 14-devis-signe
+          capture signedpdf 15-pdf-signe
           xcrun simctl ui "$DEVICE" appearance dark
           capture dashboard 11-accueil-sombre
           capture editor 12-editeur-sombre

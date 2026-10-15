@@ -34,6 +34,7 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         CODE_SIGN_ENTITLEMENTS: Config/DevisMinute.entitlements
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS: YES
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         INFOPLIST_KEY_CFBundleDisplayName: DevisMinute
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.business

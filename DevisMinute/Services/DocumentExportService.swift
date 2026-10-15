@@ -38,7 +38,8 @@ enum DocumentExportService {
             payment: payment,
             isDraft: isDraft,
             generatedAt: Date(),
-            paymentQRCodeJPEG: qrCode
+            paymentQRCodeJPEG: qrCode,
+            signature: record.document.kind == .quote ? record.signature : nil
         )
         return DocumentPDFRenderer.render(request, deflate: deflate)
     }
