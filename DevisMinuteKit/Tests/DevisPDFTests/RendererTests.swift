@@ -162,3 +162,27 @@ final class RendererTests: XCTestCase {
         XCTAssertLessThan(PDFColor(hex: "#245A64")!.luminance, 0.2)
     }
 }
+
+final class PaymentBlockTests: XCTestCase {
+    func testOnlinePaymentBlockWithQRCode() throws {
+        var document = SampleData.invoice(lineCount: 2)
+        document.paymentLink = "https://buy.stripe.com/test_abc123"
+        let result = DocumentPDFRenderer.render(RenderRequest(document: document, appearance: DocumentAppearance(template: .classique), paymentQRCodeJPEG: SampleData.logoJPEG))
+        let text = String(decoding: result.data, as: UTF8.self)
+        XCTAssertTrue(text.contains("(Payer en ligne \\(Stripe\\))"))
+        XCTAssertTrue(text.contains("/URI <FEFF"), "Lien cliquable")
+        XCTAssertEqual(text.components(separatedBy: "/Subtype /Image").count - 1, 1, "QR code intégré")
+        if let directory = ProcessInfo.processInfo.environment["DEVIS_PDF_OUTPUT"] {
+            try result.data.write(to: URL(fileURLWithPath: directory).appendingPathComponent("paiement-en-ligne.pdf"))
+        }
+    }
+
+    func testNoBlockWithoutValidLinkOrOnCreditNote() {
+        var document = SampleData.invoice(lineCount: 2)
+        document.paymentLink = "pas un lien"
+        XCTAssertFalse(String(decoding: DocumentPDFRenderer.render(RenderRequest(document: document, appearance: DocumentAppearance())).data, as: UTF8.self).contains("Payer en ligne"))
+        document.paymentLink = "https://buy.stripe.com/x"
+        document.kind = .creditNote
+        XCTAssertFalse(String(decoding: DocumentPDFRenderer.render(RenderRequest(document: document, appearance: DocumentAppearance())).data, as: UTF8.self).contains("Payer en ligne"))
+    }
+}

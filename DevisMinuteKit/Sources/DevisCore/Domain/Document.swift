@@ -249,6 +249,8 @@ public struct BusinessDocument: Codable, Sendable, Equatable, Identifiable {
     /// Autoliquidation : la TVA est due par le client (sous-traitance BTP, prestations
     /// intracommunautaires…). Aucune TVA n'est facturée et la mention « Autoliquidation » est imprimée.
     public var reverseCharge: Bool
+    /// Lien de paiement en ligne (Stripe, SumUp, PayPal…), imprimé avec un QR code. Facultatif.
+    public var paymentLink: String?
 
     public init(
         id: UUID = UUID(),
@@ -271,7 +273,8 @@ public struct BusinessDocument: Codable, Sendable, Equatable, Identifiable {
         paymentTermsText: String = "",
         specialConditions: String = "",
         notes: String = "",
-        reverseCharge: Bool = false
+        reverseCharge: Bool = false,
+        paymentLink: String? = nil
     ) {
         self.id = id
         self.kind = kind
@@ -294,6 +297,7 @@ public struct BusinessDocument: Codable, Sendable, Equatable, Identifiable {
         self.specialConditions = specialConditions
         self.notes = notes
         self.reverseCharge = reverseCharge
+        self.paymentLink = paymentLink
     }
 
     /// TVA facturée sur ce document ?

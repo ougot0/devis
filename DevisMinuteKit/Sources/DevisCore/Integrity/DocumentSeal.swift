@@ -145,6 +145,9 @@ public enum DocumentSealer {
         put("paymentTerms", document.paymentTermsText)
         put("specialConditions", document.specialConditions)
         put("notes", document.notes)
+        // Champs ajoutés après la v1 : écrits seulement s'ils sont renseignés, pour que
+        // les sceaux des factures émises auparavant restent valides.
+        if let link = document.paymentLink, !link.isEmpty { put("paymentLink", link) }
 
         let totals = DocumentCalculator.totals(for: document)
         put("totalHT", amount(totals.totalHT))

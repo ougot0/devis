@@ -44,6 +44,7 @@ struct CompanySettingsView: View {
             IdentitySection(profile: $profile)
             ContactSection(profile: $profile)
             BankSection(profile: $profile)
+            OnlinePaymentSection(profile: $profile)
             PaymentTermsSection(profile: $profile)
             MentionsSection(profile: $profile)
             Section {
@@ -210,6 +211,10 @@ struct NumberingSettingsView: View {
     @State private var patterns: [NumberingSeries: String] = [:]
     @State private var resets: [NumberingSeries: Bool] = [:]
     @State private var error: PresentedError?
+    @State private var resumeNumber = ""
+    @State private var resumeDate = Date()
+    @State private var confirmResume = false
+    @State private var resumedMessage: String?
 
     var body: some View {
         Form {
@@ -233,6 +238,34 @@ struct NumberingSettingsView: View {
                 }
             }
             Section {
+                if let suggestion = store.suggestedResume(for: .invoice) {
+                    Button("Utiliser la dernière facture importée : \(suggestion.number)") {
+                        resumeNumber = suggestion.number
+                        resumeDate = suggestion.date
+                    }
+                }
+                TextField("Dernier numéro émis, ex. F-2026-0057", text: $resumeNumber)
+                    .font(.body.monospaced())
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.characters)
+                DatePicker("Date de cette facture", selection: $resumeDate, in: ...Date(), displayedComponents: .date)
+                if !resumeNumber.trimmed.isEmpty {
+                    if NumberingService.sequence(in: resumeNumber.trimmed, scheme: store.scheme(for: .invoice)) == nil {
+                        Text("Ce numéro ne suit pas le format des factures (\(store.scheme(for: .invoice).pattern)). Modifiez d'abord le format ci-dessus pour qu'il corresponde.")
+                            .font(.footnote).foregroundStyle(Theme.danger)
+                    }
+                }
+                Button("Continuer la numérotation après ce numéro") { confirmResume = true }
+                    .disabled(NumberingService.sequence(in: resumeNumber.trimmed, scheme: store.scheme(for: .invoice)) == nil)
+                if let resumedMessage {
+                    Label(resumedMessage, systemImage: "checkmark.circle").font(.footnote).foregroundStyle(Theme.success)
+                }
+            } header: {
+                Text("Reprendre une numérotation existante")
+            } footer: {
+                Text("Vous facturiez déjà avec un autre logiciel ? Indiquez le dernier numéro de facture émis : la prochaine facture DevisMinute portera le numéro suivant, sans trou ni doublon.")
+            }
+            Section {
                 Text("Jetons : {AAAA} année, {AA} année sur 2 chiffres, {MM} mois, {N} compteur, {N:4} compteur sur 4 chiffres.\nLes factures sont numérotées à l'émission, dans l'ordre chronologique et sans rupture. Changer de format ne renumérote jamais les documents existants.")
                     .font(.footnote).foregroundStyle(Theme.neutral)
             }
@@ -240,12 +273,26 @@ struct NumberingSettingsView: View {
         .appBackground()
         .navigationTitle("Numérotation")
         .errorAlert($error)
+        .confirmationDialog("Continuer après \(resumeNumber.trimmed) ?", isPresented: $confirmResume, titleVisibility: .visible) {
+            Button("Confirmer") { resume() }
+        } message: {
+            Text("Vérifiez bien : ce réglage ne peut pas revenir en arrière.")
+        }
         .onAppear {
             for series in [NumberingSeries.quote, .invoice, .creditNote] {
                 let scheme = store.scheme(for: series)
                 patterns[series] = scheme.pattern
                 resets[series] = scheme.resetsYearly
             }
+        }
+    }
+
+    private func resume() {
+        do {
+            try store.resumeNumbering(series: .invoice, afterNumber: resumeNumber, issuedOn: resumeDate)
+            resumedMessage = "Prochaine facture : \(store.nextNumberPreview(for: .invoice))"
+        } catch {
+            self.error = PresentedError(error)
         }
     }
 

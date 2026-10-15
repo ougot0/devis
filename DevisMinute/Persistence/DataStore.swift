@@ -12,6 +12,7 @@ enum StoreError: LocalizedError {
     case complianceBlocking([ComplianceIssue])
     case invoiceNotIssued
     case persistence(String)
+    case invalid(String)
 
     var errorDescription: String? {
         switch self {
@@ -22,6 +23,7 @@ enum StoreError: LocalizedError {
             return "Informations manquantes avant émission :\n" + issues.filter { $0.severity == .blocking }.map { "• " + $0.message }.joined(separator: "\n")
         case .invoiceNotIssued: return "Cette action nécessite une facture émise."
         case .persistence(let detail): return "Enregistrement impossible : \(detail)"
+        case .invalid(let message): return message
         }
     }
 }
@@ -200,7 +202,8 @@ final class AppDataStore {
             serviceDate: today,
             dueDate: calendar.date(byAdding: .day, value: company.paymentTermsDays, to: today),
             seller: company,
-            customer: customer?.snapshot ?? CustomerSnapshot()
+            customer: customer?.snapshot ?? CustomerSnapshot(),
+            paymentLink: company.defaultPaymentLink
         )
         return DocumentRecord(document: document, invoiceStatus: .draft, customerID: customer?.id, createdAt: today, updatedAt: today)
     }
@@ -288,7 +291,8 @@ final class AppDataStore {
             .filter { $0.document.kind == .depositInvoice && $0.isIssuedInvoice && $0.sourceDocumentID == quoteID }
             .sorted { $0.document.issueDate < $1.document.issueDate }
             .map { DepositDeduction(invoiceNumber: $0.document.number, issueDate: $0.document.issueDate, amountTTC: DocumentCalculator.totals(for: $0.document).totalTTC) }
-        let invoice = DocumentFactory.invoice(from: quote.document, seller: company, issueDate: Date(), deposits: deposits)
+        var invoice = DocumentFactory.invoice(from: quote.document, seller: company, issueDate: Date(), deposits: deposits)
+        if invoice.paymentLink == nil { invoice.paymentLink = company.defaultPaymentLink }
         let record = DocumentRecord(document: invoice, invoiceStatus: .draft, customerID: quote.customerID, sourceDocumentID: quoteID)
         if status == .sent { try? setQuoteStatus(id: quoteID, to: .accepted) }
         try save(record)
@@ -297,7 +301,8 @@ final class AppDataStore {
 
     func createDepositInvoice(quoteID: UUID, amountTTC: Decimal) throws -> DocumentRecord {
         guard let quote = record(id: quoteID) else { throw StoreError.notFound }
-        let deposit = DocumentFactory.depositInvoice(from: quote.document, seller: company, amountTTC: amountTTC, issueDate: Date())
+        var deposit = DocumentFactory.depositInvoice(from: quote.document, seller: company, amountTTC: amountTTC, issueDate: Date())
+        if deposit.paymentLink == nil { deposit.paymentLink = company.defaultPaymentLink }
         let record = DocumentRecord(document: deposit, invoiceStatus: .draft, customerID: quote.customerID, sourceDocumentID: quoteID)
         try save(record)
         return record
@@ -411,6 +416,47 @@ final class AppDataStore {
         try commit()
     }
 
+    // MARK: - Historique et reprise de numérotation
+
+    /// Importe des factures émises avec un autre logiciel (archive, voir `HistoryImporter`).
+    func importHistory(_ data: Data) throws -> HistoryImporter.Result {
+        let existingNumbers = Set(allRecords().filter { $0.document.kind.isInvoiceLike }.map(\.document.number).filter { !$0.isEmpty })
+        let result = HistoryImporter.invoices(data, seller: company, existingCustomers: allCustomers(), existingNumbers: existingNumbers)
+        for customer in result.newCustomers { context.insert(CustomerEntity(record: customer)) }
+        for record in result.records { context.insert(DocumentEntity(record: record)) }
+        try commit()
+        return result
+    }
+
+    /// Dernier numéro importé qui suit le format de la série, s'il dépasse la numérotation actuelle.
+    func suggestedResume(for series: NumberingSeries) -> (number: String, date: Date)? {
+        let scheme = scheme(for: series)
+        let current = state(for: series)
+        let candidates = allRecords()
+            .filter { $0.imported && NumberingSeries.series(for: $0.document.kind) == series }
+            .compactMap { record -> (Int, String, Date)? in
+                guard let sequence = NumberingService.sequence(in: record.document.number, scheme: scheme) else { return nil }
+                return (sequence, record.document.number, record.document.issueDate)
+            }
+            .sorted { $0.2 == $1.2 ? $0.0 < $1.0 : $0.2 < $1.2 }
+        guard let last = candidates.last else { return nil }
+        let currentYear = current.lastYear ?? 0
+        let lastYear = Calendar.devisMinute.component(.year, from: last.2)
+        if lastYear < currentYear || (lastYear == currentYear && last.0 <= current.lastSequence) { return nil }
+        return (last.1, last.2)
+    }
+
+    /// Reprend la numérotation après un numéro émis dans un autre logiciel.
+    func resumeNumbering(series: NumberingSeries, afterNumber number: String, issuedOn date: Date) throws {
+        let scheme = scheme(for: series)
+        guard let sequence = NumberingService.sequence(in: number.trimmed, scheme: scheme) else {
+            throw StoreError.invalid("Le numéro « \(number) » ne correspond pas au format \(scheme.pattern). Adaptez d'abord le format de numérotation.")
+        }
+        numbering[series.rawValue] = try NumberingService.resumedState(after: sequence, lastIssueDate: date, lastNumber: number.trimmed, current: state(for: series))
+        persistSettings()
+        try commit()
+    }
+
     // MARK: - Sauvegarde et restauration
 
     func makeSnapshot(appVersion: String) -> BackupSnapshot {
@@ -471,7 +517,8 @@ final class AppDataStore {
     /// Vérifie la chaîne de sceaux et la continuité de la numérotation de chaque série.
     func integrityReport() -> [String] {
         var problems: [String] = []
-        let records = allRecords().filter(\.isIssuedInvoice)
+        // L'historique importé n'a pas de sceau : il est exclu de la chaîne d'intégrité.
+        let records = allRecords().filter { $0.isIssuedInvoice && !$0.imported }
         for series in [NumberingSeries.invoice, .creditNote] {
             let entries = records
                 .filter { NumberingSeries.series(for: $0.document.kind) == series }

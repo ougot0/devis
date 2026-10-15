@@ -151,6 +151,8 @@ public struct CompanyProfile: Codable, Sendable, Equatable {
     public var approvedAssociationMember: Bool
     public var additionalMentions: String
     public var quoteDefaultValidityDays: Int
+    /// Lien de paiement en ligne proposé par défaut sur les nouvelles factures (facultatif).
+    public var defaultPaymentLink: String?
 
     public init(
         tradeName: String = "",

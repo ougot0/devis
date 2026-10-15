@@ -200,7 +200,7 @@ struct DocumentEditorView: View {
 
     private var optionsSection: some View {
         Section {
-            DisclosureGroup("Remise globale, acompte, TVA", isExpanded: $showDetails) {
+            DisclosureGroup("Remise, acompte, TVA, paiement en ligne", isExpanded: $showDetails) {
                 DiscountEditor(title: "Remise globale", discount: $record.document.globalDiscount)
                 if isQuote {
                     DepositRequestEditor(request: $record.document.depositRequest)
@@ -209,6 +209,17 @@ struct DocumentEditorView: View {
                     Toggle("Autoliquidation (TVA due par le client)", isOn: $record.document.reverseCharge)
                 }
                 TextField("Référence de commande du client", text: $record.document.purchaseOrderReference)
+                if document.kind != .creditNote {
+                    TextField("Lien de paiement en ligne (https://…)", text: Binding(
+                        get: { document.paymentLink ?? "" },
+                        set: { record.document.paymentLink = $0.trimmed.isEmpty ? nil : $0.trimmed }))
+                        .keyboardType(.URL)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                    if let link = document.paymentLink, !PaymentLink.isValid(link) {
+                        Text("Lien invalide : il doit commencer par https://. Il ne sera pas imprimé.").font(.footnote).foregroundStyle(Theme.danger)
+                    }
+                }
                 if document.customer.kind == .business {
                     Toggle("Adresse de livraison différente", isOn: Binding(get: { document.customer.deliveryAddress != nil }, set: { record.document.customer.deliveryAddress = $0 ? PostalAddress() : nil }))
                     if document.customer.deliveryAddress != nil {

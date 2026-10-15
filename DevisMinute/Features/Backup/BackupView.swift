@@ -24,7 +24,7 @@ struct BackupView: View {
     @State private var error: PresentedError?
     @State private var working = false
 
-    enum ImportKind { case backup, customers, catalog }
+    enum ImportKind { case backup, customers, catalog, history }
 
     struct PendingRestore: Identifiable {
         let id = UUID()
@@ -78,10 +78,11 @@ struct BackupView: View {
             Section {
                 Button("Importer des clients (CSV)") { importKind = .customers; showImporter = true }
                 Button("Importer un catalogue (CSV)") { importKind = .catalog; showImporter = true }
+                Button("Importer l'historique de factures (CSV)") { importKind = .history; showImporter = true }
             } header: {
                 Text("Importer")
             } footer: {
-                Text("Clients : colonnes Nom, Contact, Adresse, Code postal, Ville, Email, Téléphone, SIREN, TVA, Type. Catalogue : Nom, Prix (obligatoires), Description, Catégorie, Taux TVA, Unité, Coût de revient, Prix TTC (oui/non).")
+                Text("Historique : colonnes Numéro, Date, Client, Total HT, TVA, Total TTC (deux montants suffisent), Payé, Échéance, Type (facture ou avoir). Les factures importées servent d'archive : le document d'origine reste la référence.\nClients : colonnes Nom, Contact, Adresse, Code postal, Ville, Email, Téléphone, SIREN, TVA, Type. Catalogue : Nom, Prix (obligatoires), Description, Catégorie, Taux TVA, Unité, Coût de revient, Prix TTC (oui/non).")
             }
         }
         .appBackground()
@@ -170,6 +171,15 @@ struct BackupView: View {
                 let imported = CSVImporter.customers(data)
                 try store.importCustomers(imported.items)
                 message = "\(imported.items.count) client(s) importé(s)." + skippedText(imported.skipped)
+            case .history:
+                let imported = try store.importHistory(data)
+                var text = "\(imported.records.count) facture(s) importée(s)"
+                if !imported.newCustomers.isEmpty { text += ", \(imported.newCustomers.count) client(s) créé(s)" }
+                text += "." + skippedText(imported.skipped)
+                if let suggestion = store.suggestedResume(for: .invoice) {
+                    text += "\n\nPensez à reprendre la numérotation après \(suggestion.number) : Plus › Entreprise et documents › Numérotation."
+                }
+                message = text
             case .catalog:
                 let imported = CSVImporter.catalog(data)
                 try store.importCatalog(imported.items)

@@ -78,6 +78,8 @@ public struct DocumentRecord: Codable, Sendable, Equatable, Identifiable {
     public var updatedAt: Date
     /// Horodatage de l'émission définitive (factures).
     public var issuedAt: Date?
+    /// Facture importée d'un autre logiciel (archive) : pas de sceau, le document d'origine fait foi.
+    public var isImported: Bool?
 
     public var id: UUID { document.id }
 
@@ -95,6 +97,8 @@ public struct DocumentRecord: Codable, Sendable, Equatable, Identifiable {
     }
 
     public var isIssuedInvoice: Bool { document.kind.isInvoiceLike && invoiceStatus == .issued }
+
+    public var imported: Bool { isImported == true }
 }
 
 /// Calculs transverses entre documents (avoirs imputés, soldes).

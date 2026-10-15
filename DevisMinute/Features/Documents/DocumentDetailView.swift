@@ -88,7 +88,12 @@ struct DocumentDetailView: View {
             }
 
             Section {
-                Button { sheet = .preview } label: { Label("Aperçu et partage du PDF", systemImage: "doc.richtext") }
+                if record.imported {
+                    Label("Facture importée d'un autre logiciel : le document d'origine fait foi. Elle sert d'archive pour l'historique, les statistiques et le suivi des paiements.", systemImage: "tray.and.arrow.down")
+                        .font(.footnote).foregroundStyle(Theme.neutral)
+                } else {
+                    Button { sheet = .preview } label: { Label("Aperçu et partage du PDF", systemImage: "doc.richtext") }
+                }
                 actions(record)
             }
 
@@ -106,7 +111,7 @@ struct DocumentDetailView: View {
                 }
             }
 
-            if record.isIssuedInvoice {
+            if record.isIssuedInvoice && !record.imported {
                 integritySection(record)
             }
         }
@@ -177,7 +182,7 @@ struct DocumentDetailView: View {
                 Button { sheet = .creditNote } label: { Label("Corriger ou annuler par un avoir", systemImage: "arrow.uturn.left.circle") }
             }
             Button { duplicate(record) } label: { Label("Dupliquer en nouvelle facture", systemImage: "plus.square.on.square") }
-            if purchases.isUnlocked(.structuredExport) {
+            if purchases.isUnlocked(.structuredExport) && !record.imported {
                 Button { exportCII(record) } label: { Label("Exporter les données structurées (XML)", systemImage: "chevron.left.forwardslash.chevron.right") }
             }
             if let shareURL {

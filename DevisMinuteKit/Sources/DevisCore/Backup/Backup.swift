@@ -187,6 +187,7 @@ public enum BackupService {
             guard !record.document.number.isEmpty, issuedNumbers.insert(key).inserted else {
                 throw BackupError.invalidContent("numéro de facture vide ou en double (\(record.document.number))")
             }
+            if record.imported { continue }
             if let seal = record.seal {
                 if !DocumentSealer.verify(record.document, seal: seal) {
                     warnings.append("La facture \(record.document.number) ne correspond plus à son sceau d'intégrité.")

@@ -180,3 +180,28 @@ struct MentionsSection: View {
         }
     }
 }
+
+/// Lien de paiement en ligne par défaut (Stripe Payment Links, SumUp, PayPal…).
+struct OnlinePaymentSection: View {
+    @Binding var profile: CompanyProfile
+
+    var body: some View {
+        Section {
+            TextField("https://buy.stripe.com/…", text: Binding(
+                get: { profile.defaultPaymentLink ?? "" },
+                set: { profile.defaultPaymentLink = $0.trimmed.isEmpty ? nil : $0.trimmed }))
+                .keyboardType(.URL)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled()
+            if let link = profile.defaultPaymentLink, !PaymentLink.isValid(link) {
+                Text("Le lien doit commencer par https:// et ne pas contenir d'espace.").font(.footnote).foregroundStyle(Theme.danger)
+            } else if let link = profile.defaultPaymentLink, let provider = PaymentLink.providerName(link) {
+                Label("Lien \(provider) reconnu", systemImage: "checkmark.circle").font(.footnote).foregroundStyle(Theme.success)
+            }
+        } header: {
+            Text("Paiement en ligne (facultatif)")
+        } footer: {
+            Text("Collez un lien de paiement créé dans Stripe (Liens de paiement, avec « le client choisit le montant »), SumUp ou PayPal. Il est imprimé sur vos factures avec un QR code : le client paie par carte. Pensez ensuite à enregistrer le paiement dans DevisMinute.")
+        }
+    }
+}

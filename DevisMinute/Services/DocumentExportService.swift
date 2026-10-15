@@ -1,5 +1,7 @@
 import Foundation
 import UIKit
+import CoreImage
+import CoreImage.CIFilterBuiltins
 import DevisCore
 import DevisPDF
 
@@ -25,13 +27,18 @@ enum DocumentExportService {
         if isDraft || (record.document.kind == .quote && record.quoteStatus == .draft) {
             document.seller = store.company
         }
+        var qrCode: Data?
+        if let link = document.paymentLink, PaymentLink.isValid(link) {
+            qrCode = QRCodeGenerator.jpeg(for: link.trimmed)
+        }
         let request = RenderRequest(
             document: document,
             appearance: store.appearance,
             logoJPEG: store.logoJPEG,
             payment: payment,
             isDraft: isDraft,
-            generatedAt: Date()
+            generatedAt: Date(),
+            paymentQRCodeJPEG: qrCode
         )
         return DocumentPDFRenderer.render(request, deflate: deflate)
     }
@@ -85,5 +92,31 @@ enum LogoProcessor {
             image.draw(in: CGRect(origin: .zero, size: target))
         }
         return rendered.jpegData(compressionQuality: 0.88)
+    }
+}
+
+/// QR code généré sur l'appareil (Core Image), sans service externe.
+enum QRCodeGenerator {
+    static func jpeg(for text: String, pixels: CGFloat = 480) -> Data? {
+        let filter = CIFilter.qrCodeGenerator()
+        filter.message = Data(text.utf8)
+        filter.correctionLevel = "M"
+        guard let output = filter.outputImage else { return nil }
+        // Agrandissement sans lissage pour garder des modules nets.
+        let scale = max(1, (pixels / output.extent.width).rounded(.down))
+        let scaled = output.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        guard let cgImage = CIContext(options: [.useSoftwareRenderer: false]).createCGImage(scaled, from: scaled.extent) else { return nil }
+        let margin = scale * 2
+        let size = CGSize(width: scaled.extent.width + margin * 2, height: scaled.extent.height + margin * 2)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = true
+        let image = UIGraphicsImageRenderer(size: size, format: format).image { context in
+            UIColor.white.setFill()
+            context.fill(CGRect(origin: .zero, size: size))
+            context.cgContext.interpolationQuality = .none
+            UIImage(cgImage: cgImage).draw(in: CGRect(x: margin, y: margin, width: scaled.extent.width, height: scaled.extent.height))
+        }
+        return image.jpegData(compressionQuality: 1.0)
     }
 }

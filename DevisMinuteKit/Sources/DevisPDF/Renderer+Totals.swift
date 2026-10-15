@@ -173,6 +173,7 @@ extension RenderSession {
         if !payment.isEmpty {
             flowBlock(title: document.kind == .quote ? "Modalités de paiement" : "Règlement", text: payment.joined(separator: "\n"), titleStyle: sectionTitle, textStyle: text)
         }
+        drawOnlinePaymentBlock()
         if !document.specialConditions.trimmed.isEmpty {
             flowBlock(title: "Conditions particulières", text: document.specialConditions.trimmed, titleStyle: sectionTitle, textStyle: text)
         }
@@ -186,6 +187,37 @@ extension RenderSession {
         if document.kind == .quote && request.appearance.showSignatureBlock {
             drawSignatureBlock()
         }
+    }
+
+    /// Bloc « Payer en ligne » : QR code + lien cliquable (Stripe, SumUp, PayPal…).
+    func drawOnlinePaymentBlock() {
+        guard document.kind != .creditNote, let link = document.paymentLink?.trimmed, PaymentLink.isValid(link) else { return }
+        if let payment = request.payment, payment.balance == 0, payment.paid > 0 { return }
+        let qrSize = 64.0
+        let hasQR = request.paymentQRCodeJPEG.flatMap(PDFImage.init(jpegData:)) != nil
+        let height = max(hasQR ? qrSize : 0, 40) + 12
+        ensureSpace(height + 8)
+        let top = y
+        page.strokeRect(x: marginLeft, y: top, width: contentWidth, height: height, color: accent.tinted(0.5), lineWidth: 0.7)
+        var textX = marginLeft + 10
+        if let data = request.paymentQRCodeJPEG, let image = PDFImage(jpegData: data) {
+            let handle = builder.register(image: image)
+            page.image(handle, x: marginLeft + 6, y: top + 6, width: qrSize, height: qrSize)
+            textX = marginLeft + qrSize + 16
+        }
+        let textWidth = right - textX - 10
+        let provider = PaymentLink.providerName(link).map { " (\($0))" } ?? ""
+        page.text("Payer en ligne\(provider)", x: textX, baseline: top + 18, font: fonts.heading, size: bodySize, color: accent)
+        let amountDue = request.payment?.balance ?? totals.netToPay
+        let lineStyle = TextStyle(font: fonts.body, size: bodySize - 1, color: ink)
+        let explanation = document.kind == .quote ? "Réglez l'acompte par carte bancaire en scannant le QR code ou via le lien :" : "Réglez \(Money.format(amountDue)) par carte bancaire en scannant le QR code ou via le lien :"
+        page.paragraph(explanation, x: textX, top: top + 24, width: textWidth, style: lineStyle)
+        let linkStyle = TextStyle(font: fonts.body, size: bodySize - 1.5, color: accent)
+        let shown = TextLayout.truncate(link, style: linkStyle, width: textWidth)
+        page.text(shown, x: textX, baseline: top + 24 + lineStyle.lineHeight * 2 + 6, font: linkStyle.font, size: linkStyle.size, color: accent)
+        page.link(url: link, x: textX, y: top + 24 + lineStyle.lineHeight * 2 - 4, width: linkStyle.font.width(of: shown, size: linkStyle.size), height: linkStyle.size + 4)
+        if hasQR { page.link(url: link, x: marginLeft + 6, y: top + 6, width: qrSize, height: qrSize) }
+        y = top + height + 14
     }
 
     func formatIBAN(_ iban: String) -> String {

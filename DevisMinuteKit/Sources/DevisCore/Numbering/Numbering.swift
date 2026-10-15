@@ -93,6 +93,8 @@ public enum NumberingError: Error, Equatable, LocalizedError {
     case patternTooLong
     case notChronological(lastIssueDate: Date, lastNumber: String)
     case duplicateNumber(String)
+    case invalidStartingPoint
+    case startingPointGoesBackwards(current: String)
 
     public var errorDescription: String? {
         switch self {
@@ -110,6 +112,10 @@ public enum NumberingError: Error, Equatable, LocalizedError {
             return "La numérotation doit être chronologique : le document \(number) a été émis le \(formatter.string(from: date)). La date d'émission ne peut pas être antérieure."
         case .duplicateNumber(let number):
             return "Le numéro \(number) existe déjà."
+        case .invalidStartingPoint:
+            return "Le dernier numéro indiqué n'est pas valide."
+        case .startingPointGoesBackwards(let current):
+            return "La numérotation ne peut pas revenir en arrière : le dernier numéro attribué est \(current.isEmpty ? "plus récent" : current). Cela créerait des numéros en double."
         }
     }
 }
@@ -151,6 +157,48 @@ public enum NumberingService {
         var sequence = state.lastSequence + 1
         if scheme.resetsYearly, let lastYear = state.lastYear, year != lastYear { sequence = 1 }
         return scheme.format(sequence: sequence, date: issueDate, calendar: calendar)
+    }
+
+    /// Reprise d'une numérotation commencée dans un autre logiciel : la prochaine facture portera
+    /// le numéro `lastSequence + 1`. Refuse de revenir en arrière (risque de numéros en double).
+    /// - Parameters:
+    ///   - lastSequence: compteur du dernier document émis ailleurs (57 pour « F-2026-0057 »).
+    ///   - lastIssueDate: date de ce dernier document (contrôle chronologique des suivants).
+    public static func resumedState(after lastSequence: Int, lastIssueDate: Date, lastNumber: String, current: NumberingState, calendar: Calendar = .devisMinute) throws -> NumberingState {
+        guard lastSequence >= 0, lastSequence < 1_000_000_000 else { throw NumberingError.invalidStartingPoint }
+        let year = calendar.component(.year, from: lastIssueDate)
+        if let currentYear = current.lastYear, currentYear == year, lastSequence < current.lastSequence {
+            throw NumberingError.startingPointGoesBackwards(current: current.lastNumber)
+        }
+        if let currentDate = current.lastIssueDate, calendar.startOfDay(for: lastIssueDate) < calendar.startOfDay(for: currentDate), current.lastSequence > 0 {
+            throw NumberingError.startingPointGoesBackwards(current: current.lastNumber)
+        }
+        return NumberingState(lastSequence: lastSequence, lastYear: year, lastIssueDate: lastIssueDate, lastNumber: lastNumber)
+    }
+
+    /// Extrait le compteur d'un numéro existant selon le format (« F-2026-0057 » → 57).
+    /// Retourne `nil` si le numéro ne suit pas le format.
+    public static func sequence(in number: String, scheme: NumberingScheme) -> Int? {
+        // Construit l'expression en remplaçant chaque jeton du format ; le reste est littéral.
+        var pattern = ""
+        var rest = Substring(scheme.pattern)
+        while !rest.isEmpty {
+            if rest.hasPrefix("{AAAA}") { pattern += #"\d{4}"#; rest = rest.dropFirst(6); continue }
+            if rest.hasPrefix("{AA}") { pattern += #"\d{2}"#; rest = rest.dropFirst(4); continue }
+            if rest.hasPrefix("{MM}") { pattern += #"\d{2}"#; rest = rest.dropFirst(4); continue }
+            if rest.hasPrefix("{N"), let close = rest.firstIndex(of: "}") {
+                pattern += #"(\d+)"#
+                rest = rest[rest.index(after: close)...]
+                continue
+            }
+            pattern += NSRegularExpression.escapedPattern(for: String(rest.first!))
+            rest = rest.dropFirst()
+        }
+        guard let regex = try? NSRegularExpression(pattern: "^" + pattern + "$"),
+              let match = regex.firstMatch(in: number, range: NSRange(number.startIndex..., in: number)),
+              match.numberOfRanges > 1,
+              let range = Range(match.range(at: 1), in: number) else { return nil }
+        return Int(number[range])
     }
 
     /// Contrôle a posteriori d'une liste de numéros émis dans l'ordre :

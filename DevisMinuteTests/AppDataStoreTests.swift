@@ -116,4 +116,36 @@ final class AppDataStoreTests: XCTestCase {
         let next = try store.issue(id: try draftInvoice().id)
         XCTAssertTrue(next.document.number.hasSuffix("0002"), "La numérotation reprend après la restauration")
     }
+
+    func testResumeNumberingAfterExternalInvoice() throws {
+        try store.resumeNumbering(series: .invoice, afterNumber: "F-2026-0057", issuedOn: Date().addingTimeInterval(-86400))
+        let issued = try store.issue(id: try draftInvoice().id)
+        XCTAssertEqual(issued.document.number, "F-2026-0058")
+        XCTAssertThrowsError(try store.resumeNumbering(series: .invoice, afterNumber: "F-2026-0010", issuedOn: Date()), "Pas de retour en arrière")
+        XCTAssertThrowsError(try store.resumeNumbering(series: .invoice, afterNumber: "FACT-99", issuedOn: Date()), "Format non reconnu")
+    }
+
+    func testImportHistoryThenContinueNumbering() throws {
+        let calendar = Calendar.devisMinute
+        let year = calendar.component(.year, from: Date())
+        let past = calendar.date(byAdding: .day, value: -10, to: Date())!
+        let day = DateFormatting.short(past)
+        let csv = "Numéro;Date;Client;Total HT;TVA;Total TTC;Payé\nF-\(year)-0041;\(day);Ancien Client;500;100;600;600\nF-\(year)-0042;\(day);Client SAS;200;40;240;\n"
+        let result = try store.importHistory(Data(csv.utf8))
+        XCTAssertEqual(result.records.count, 2)
+        XCTAssertEqual(store.allCustomers().count, 2, "Client SAS créé, Ancien Client créé")
+        XCTAssertTrue(store.integrityReport().isEmpty, "L'historique importé ne casse pas la chaîne d'intégrité")
+        let suggestion = try XCTUnwrap(store.suggestedResume(for: .invoice))
+        XCTAssertEqual(suggestion.number, "F-\(year)-0042")
+        try store.resumeNumbering(series: .invoice, afterNumber: suggestion.number, issuedOn: suggestion.date)
+        XCTAssertEqual(try store.issue(id: try draftInvoice().id).document.number, "F-\(year)-0043")
+    }
+
+    func testDefaultPaymentLinkIsAppliedToNewInvoices() throws {
+        var profile = store.company
+        profile.defaultPaymentLink = "https://buy.stripe.com/test_123"
+        try store.updateCompany(profile)
+        XCTAssertEqual(store.makeInvoice(customer: nil).document.paymentLink, "https://buy.stripe.com/test_123")
+        XCTAssertNil(store.makeQuote(customer: nil).document.paymentLink)
+    }
 }

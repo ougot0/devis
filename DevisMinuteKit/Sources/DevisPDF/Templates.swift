@@ -108,9 +108,12 @@ public struct RenderRequest: Sendable {
     public var payment: PaymentSummary?
     /// Document non émis : un bandeau « Brouillon » est imprimé.
     public var isDraft: Bool
+    /// QR code du lien de paiement (`document.paymentLink`), en JPEG, généré par l'application.
+    public var paymentQRCodeJPEG: Data?
     public var generatedAt: Date
 
-    public init(document: BusinessDocument, appearance: DocumentAppearance, logoJPEG: Data? = nil, payment: PaymentSummary? = nil, isDraft: Bool = false, generatedAt: Date = Date()) {
+    public init(document: BusinessDocument, appearance: DocumentAppearance, logoJPEG: Data? = nil, payment: PaymentSummary? = nil, isDraft: Bool = false, generatedAt: Date = Date(), paymentQRCodeJPEG: Data? = nil) {
+        self.paymentQRCodeJPEG = paymentQRCodeJPEG
         self.document = document
         self.appearance = appearance
         self.logoJPEG = logoJPEG
