@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   screenshots:
     name: Captures sur simulateur iPhone
@@ -51,3 +54,12 @@ jobs:
         with:
           name: captures
           path: shots/*.png
+      - name: Enregistrer les captures dans docs/captures
+        run: |
+          mkdir -p docs/captures
+          for f in shots/*.png; do sips -Z 1100 "$f" --out "docs/captures/$(basename "$f")" >/dev/null; done
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/captures
+          git diff --cached --quiet || git commit -m "Captures d'écran automatiques (simulateur, données fictives)"
+          git push origin HEAD:${GITHUB_REF_NAME}
