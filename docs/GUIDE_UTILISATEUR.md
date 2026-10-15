@@ -40,6 +40,12 @@ L'avoir est créé en brouillon ; vérifiez-le puis émettez-le. Si nécessaire,
 
 Sur une facture émise : *Enregistrer un paiement* (montant, date, moyen). Les paiements partiels sont acceptés ; le solde restant dû est mis à jour. Les factures échues non soldées apparaissent « En retard » sur l'accueil. Les paiements sont déclarés par vous : l'application n'est reliée à aucune banque.
 
+## 5 bis. Paiement en ligne, historique et numérotation existante
+
+- **Paiement en ligne** : créez un lien de paiement dans Stripe (Liens de paiement, option « le client choisit le montant »), SumUp ou PayPal, puis collez-le dans *Plus › Entreprise et documents › Informations de l'entreprise › Paiement en ligne*. Il est ajouté automatiquement aux nouvelles factures, avec un QR code sur le PDF. Il reste modifiable facture par facture. Le paiement n'est pas détecté automatiquement : enregistrez-le dans DevisMinute quand vous le recevez.
+- **Factures faites avec un autre logiciel** : *Plus › Sauvegarde, import et export › Importer l'historique de factures (CSV)*. Colonnes : Numéro, Date, Client, Total HT, TVA, Total TTC, Payé, Échéance, Type. Les factures importées servent d'archive (historique client, statistiques, suivi des paiements) ; le document d'origine reste la référence légale.
+- **Continuer votre numérotation** : *Plus › Entreprise et documents › Numérotation › Reprendre une numérotation existante*. Indiquez le dernier numéro émis (par exemple F-2026-0057) : la prochaine facture portera le numéro F-2026-0058.
+
 ## 6. Clients et catalogue
 
 - *Clients* : recherche, filtre par type, fiche avec historique des devis et factures, facturé, encaissé, reste dû. Un client utilisé dans un document est archivé plutôt que supprimé.
