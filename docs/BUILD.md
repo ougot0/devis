@@ -35,6 +35,7 @@ Sous Linux, le package utilise `swift-crypto` (Apple, licence Apache 2.0) à la 
 
 1. Ouvrir `DevisMinute.xcodeproj`.
 2. Cible *DevisMinute* › *Signing & Capabilities* : choisir votre équipe (Team) et, si nécessaire, un identifiant de bundle à vous (`com.votresociete.devisminute`). Reporter le même préfixe dans `AppConfiguration.premiumProductID` et dans `Config/Products.storekit`.
+   Faire de même pour la cible *DevisMinuteWidget* (identifiant `<bundle de l'app>.widget`). L'app et le widget partagent le groupe d'apps `group.com.devisminute.app` : la signature automatique l'enregistre ; si vous changez de préfixe, remplacez-le dans les deux fichiers `Config/*.entitlements`, dans `WidgetBridge.appGroup` et dans `SnapshotProvider.appGroup`.
 3. Achats intégrés en test : *Product › Scheme › Edit Scheme › Run › Options › StoreKit Configuration* → `Config/Products.storekit`.
 4. Choisir un simulateur iPhone et lancer (⌘R). Tests : ⌘U.
 

@@ -50,6 +50,26 @@ Sur une facture émise : *Enregistrer un paiement* (montant, date, moyen). Les p
 - **Factures faites avec un autre logiciel** : *Plus › Sauvegarde, import et export › Importer l'historique de factures (CSV)*. Colonnes : Numéro, Date, Client, Total HT, TVA, Total TTC, Payé, Échéance, Type. Les factures importées servent d'archive (historique client, statistiques, suivi des paiements) ; le document d'origine reste la référence légale.
 - **Continuer votre numérotation** : *Plus › Entreprise et documents › Numérotation › Reprendre une numérotation existante*. Indiquez le dernier numéro émis (par exemple F-2026-0057) : la prochaine facture portera le numéro F-2026-0058.
 
+## 5 ter. Envoyer et relancer
+
+- **Envoyer par e-mail** (fiche d'un devis ou d'une facture) : l'e-mail est prérempli (destinataire, objet, message) et le PDF est joint. Vous pouvez modifier le texte avant l'envoi. Sans compte dans l'app Mail, utilisez *Autre application* (Gmail, WhatsApp, Messages…). Un devis brouillon envoyé par e-mail passe en « Envoyé ».
+- **Relancer le client** (facture en retard) : trois modèles, proposés dans l'ordre : *rappel courtois*, *relance ferme*, *mise en demeure* (qui rappelle les pénalités de retard et, entre professionnels, l'indemnité de 40 €). Chaque relance envoyée est notée sur la facture.
+- **Rappels d'échéance** : *Plus › Entreprise et documents › Relances*. Une notification le matin de l'échéance de chaque facture impayée, puis 7 jours après.
+
+## 5 quater. Dépenses et bénéfice
+
+*Plus › Dépenses et bénéfice* : ajoutez vos achats et frais (montant TTC, taux de TVA, fournisseur, catégorie). *Scanner le ticket* utilise l'appareil photo (recadrage automatique), ou choisissez une photo. Le **bénéfice estimé** = facturé HT − dépenses (HT si vous récupérez la TVA, TTC en franchise). Il apparaît aussi sur l'accueil. Les dépenses et leurs justificatifs sont inclus dans les sauvegardes ; export CSV disponible.
+
+## 5 quinquies. Micro-entrepreneur : cotisations et seuils
+
+*Plus › Cotisations URSSAF (micro)* (ou la carte URSSAF de l'accueil) :
+- **chiffre d'affaires à déclarer** pour le mois ou le trimestre écoulé : paiements encaissés, hors TVA, ventes et services séparés selon la nature des lignes (« Bien » / « Service ») ;
+- **cotisations estimées** aux taux 2026 : 12,3 % (ventes), 21,2 % (prestations BIC), 25,6 % (prestations libérales BNC), 23,2 % (Cipav), plus la formation professionnelle et, si vous l'avez choisi, le versement libératoire ;
+- **date limite** de déclaration sur autoentrepreneur.urssaf.fr ;
+- **plafonds** de l'année : micro (203 100 € / 83 600 €) et franchise de TVA (85 000 € / 37 500 €, seuils majorés 93 500 € / 41 250 €), avec alerte à 80 %.
+
+Ce sont des estimations : l'ACRE n'est pas prise en compte et seul le calcul de l'URSSAF fait foi. Les taux sont à mettre à jour chaque année.
+
 ## 6. Clients et catalogue
 
 - *Clients* : recherche, filtre par type, fiche avec historique des devis et factures, facturé, encaissé, reste dû. Un client utilisé dans un document est archivé plutôt que supprimé.
@@ -66,6 +86,10 @@ Sur une facture émise : *Enregistrer un paiement* (montant, date, moyen). Les p
 - **Objectif du mois** : touchez la carte « Objectif » de l'accueil pour fixer un chiffre d'affaires HT mensuel. L'anneau se remplit avec les factures émises dans le mois, avoirs déduits.
 - **À encaisser** : la grande carte de l'accueil montre ce qui reste dû et les montants en retard ; touchez-la pour ouvrir les factures.
 - **Icône de l'app** : *Plus › Entreprise et documents › Icône de l'app* (Pétrole, Ivoire ou Nuit).
+
+### Widgets
+
+Sur l'écran d'accueil de l'iPhone, appui long › *+* › DevisMinute : **À encaisser** (petit ou moyen format, avec les prochaines échéances) et **Objectif du mois** ; versions pour l'écran verrouillé. Si le verrouillage Face ID est activé, les montants sont masqués.
 
 ## 8. Outils
 
@@ -91,3 +115,5 @@ Conservez vos factures et sauvegardes **10 ans**, hors de l'iPhone.
 - Recevoir ou transmettre des factures électroniques via une plateforme agréée (voir *Plus › Conformité et limites*).
 - Tenir votre comptabilité ou établir vos déclarations de TVA.
 - Encaisser des paiements.
+- Déclarer à votre place auprès de l'URSSAF : les montants affichés sont à reporter vous-même sur autoentrepreneur.urssaf.fr.
+- Savoir si un client a lu ou payé : les relances et les paiements sont déclarés par vous.

@@ -16,7 +16,7 @@ En mode `.paidUpfront`, aucun achat intégré n'est présenté (toutes les fonct
 1. Adhérer à l'Apple Developer Program (99 €/an).
 2. Accepter l'accord **Paid Applications** et renseigner les informations bancaires et fiscales (indispensable pour une application payante ou des achats intégrés).
 3. Statut de **commerçant (trader)** au titre du DSA européen : obligatoire pour distribuer dans l'UE ; adresse, téléphone et email affichés sur la fiche.
-4. Créer l'application dans App Store Connect (nom, langue principale : français, identifiant de bundle, SKU).
+4. Créer l'application dans App Store Connect (nom, langue principale : français, identifiant de bundle, SKU). Les identifiants `com.devisminute.app`, `com.devisminute.app.widget` et le groupe d'apps `group.com.devisminute.app` sont créés automatiquement par la signature automatique d'Xcode (ou à créer dans *Certificates, Identifiers & Profiles*).
 5. Mode freemium : créer l'achat intégré non consommable avec le même identifiant, son prix, sa localisation, une capture et une note pour l'examen.
 
 ## 3. Conformité et déclarations
@@ -24,6 +24,7 @@ En mode `.paidUpfront`, aucun achat intégré n'est présenté (toutes les fonct
 - **Confidentialité** (« App Privacy ») : « Données non collectées ». Le manifeste `PrivacyInfo.xcprivacy` est fourni.
 - **Politique de confidentialité** : URL obligatoire. Elle doit indiquer que les données restent sur l'appareil, qu'aucune donnée n'est transmise à l'éditeur, et rappeler que l'utilisateur est responsable du traitement des données de ses clients.
 - **Chiffrement (export compliance)** : l'application utilise du chiffrement (AES-GCM de CryptoKit pour les sauvegardes, HTTPS de StoreKit). Répondre au questionnaire d'App Store Connect ; ce type d'usage relève en général des exemptions, mais **à confirmer**. La **France** impose des formalités pour les moyens de cryptologie : vérifier auprès de l'ANSSI si une déclaration est requise (Apple le rappelle pour une distribution en France). Une fois la réponse établie, ajouter la clé `ITSAppUsesNonExemptEncryption` au projet.
+- **Autorisations demandées** : appareil photo (scan des justificatifs de dépenses), notifications (rappels d'échéance), Face ID (verrouillage). Aucune n'est obligatoire pour utiliser l'application.
 - **Classification par âge** : 4+.
 - **Catégorie** : Économie et entreprise (secondaire : Productivité).
 - Vérifier que la fiche ne promet aucune conformité « facture électronique » (voir `CONFORMITE.md`).
