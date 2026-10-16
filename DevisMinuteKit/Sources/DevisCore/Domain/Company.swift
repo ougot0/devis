@@ -147,6 +147,8 @@ public struct CompanyProfile: Codable, Sendable, Equatable {
     public var earlyPaymentDiscountText: String
     /// Assurance professionnelle (obligatoire pour les activités artisanales concernées).
     public var professionalInsurance: String
+    /// Réglages micro-entrepreneur (cotisations, déclarations). Sans effet sur les documents.
+    public var micro: MicroSettings?
     /// Membre d'un centre de gestion ou d'une association agréée.
     public var approvedAssociationMember: Bool
     public var additionalMentions: String

@@ -40,6 +40,7 @@ struct RootView: View {
                 case .signature(let record): SignatureSheet(record: record, initialStrokes: DemoSupport.demoStrokes) {}
                 case .reminder(let record): SendDocumentSheet(record: record, mode: .reminder)
                 case .expenses: ExpenseListView()
+                case .micro: MicroView()
                 }
             }
         }
@@ -48,12 +49,13 @@ struct RootView: View {
 
     #if DEBUG
     enum DemoSheet: Identifiable {
-        case editor(DocumentRecord), detail(UUID), preview(DocumentRecord), statistics, signature(DocumentRecord), reminder(DocumentRecord), expenses
+        case editor(DocumentRecord), detail(UUID), preview(DocumentRecord), statistics, signature(DocumentRecord), reminder(DocumentRecord), expenses, micro
         var id: String {
             switch self {
             case .signature: return "signature"
             case .reminder: return "reminder"
             case .expenses: return "expenses"
+            case .micro: return "micro"
             case .editor: return "editor"
             case .detail: return "detail"
             case .preview: return "preview"
@@ -92,6 +94,9 @@ struct RootView: View {
         case .expenses:
             selection = .more
             demoSheet = .expenses
+        case .micro:
+            selection = .more
+            demoSheet = .micro
         case .reminder:
             selection = .invoices
             if let id = DemoSupport.overdueInvoiceID, let record = store.record(id: id) { demoSheet = .reminder(record) }
@@ -166,6 +171,7 @@ struct MoreView: View {
                 NavigationLink { ExpenseListView() } label: { Label("Dépenses et bénéfice", systemImage: "cart") }
                 NavigationLink { StatisticsView() } label: { Label("Statistiques", systemImage: "chart.bar") }
                 NavigationLink { ProfitabilityView() } label: { Label("Calculateur de rentabilité", systemImage: "percent") }
+                NavigationLink { MicroView() } label: { Label("Cotisations URSSAF (micro)", systemImage: "building.columns") }
             }
             Section {
                 NavigationLink { SettingsView() } label: { Label("Entreprise et documents", systemImage: "building.2") }

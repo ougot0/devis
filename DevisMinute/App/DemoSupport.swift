@@ -10,7 +10,7 @@ import DevisPDF
 /// de données fictives, puis ouvre l'écran demandé. Sert aux captures d'écran automatiques.
 enum DemoSupport {
     enum Screen: String {
-        case onboarding, dashboard, quotes, invoices, customers, more, editor, detail, preview, statistics, signature, signed, signedpdf, reminder, expenses
+        case onboarding, dashboard, quotes, invoices, customers, more, editor, detail, preview, statistics, signature, signed, signedpdf, reminder, expenses, micro
     }
 
     static var screen: Screen? {

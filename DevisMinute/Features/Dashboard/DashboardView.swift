@@ -53,6 +53,7 @@ struct DashboardView: View {
                 greeting
                 outstandingCard
                 goalCard
+                if store.company.legalForm == .microEntrepreneur { microCard }
                 shortcuts
                     .padding(.vertical, Theme.Space.xs)
                 Picker("Période", selection: $period) {
@@ -149,6 +150,36 @@ struct DashboardView: View {
         }
         .buttonStyle(.plain)
         .accessibilityHint("Ouvre la liste des factures")
+    }
+
+    /// Micro-entrepreneur : prochaine déclaration URSSAF et alertes de seuil.
+    private var microCard: some View {
+        let settings = store.company.micro ?? MicroSettings()
+        let period = MicroCalculator.previousPeriod(before: MicroCalculator.period(containing: today, frequency: settings.frequency), frequency: settings.frequency)
+        let declaration = MicroCalculator.declaration(records: records, period: period, settings: settings, isCraftsman: store.company.registry == .rm)
+        let alert = MicroCalculator.thresholds(records: records, year: Calendar.devisMinute.component(.year, from: today), franchise: !store.company.isVATRegistered)
+            .filter { $0.level != .ok }.max { $0.level < $1.level }
+        return NavigationLink { MicroView() } label: {
+            HStack(spacing: Theme.Space.m) {
+                Image(systemName: alert == nil ? "building.columns" : "exclamationmark.triangle.fill")
+                    .font(.title3)
+                    .foregroundStyle(alert == nil ? Theme.petrol : Theme.ochre)
+                    .frame(width: 44, height: 44)
+                    .background((alert == nil ? Theme.petrol : Theme.ochre).opacity(0.12), in: Circle())
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("URSSAF · \(declaration.title)").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
+                    Text("\(Money.format(declaration.total)) estimés, à déclarer avant le \(DateFormatting.short(declaration.dueDate))")
+                        .font(.footnote).foregroundStyle(Theme.neutral)
+                    if let alert {
+                        Text(alert.title).font(.footnote.weight(.semibold)).foregroundStyle(Theme.ochre)
+                    }
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right").font(.footnote.weight(.semibold)).foregroundStyle(Theme.neutral)
+            }
+            .card()
+        }
+        .buttonStyle(.plain)
     }
 
     private var goal: Decimal? {
