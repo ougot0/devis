@@ -347,6 +347,16 @@ final class AppDataStore {
         try commit()
     }
 
+    /// Relance envoyée au client pour une facture impayée.
+    func recordReminder(invoiceID: UUID, level: ReminderLevel, date: Date = Date()) throws {
+        guard let entity = entity(id: invoiceID), var record = entity.record else { throw StoreError.notFound }
+        guard record.isIssuedInvoice else { throw StoreError.invoiceNotIssued }
+        record.reminders = (record.reminders ?? []) + [ReminderRecord(date: date, level: level)]
+        record.updatedAt = date
+        entity.apply(record)
+        try commit()
+    }
+
     func removePayment(invoiceID: UUID, paymentID: UUID) throws {
         guard let entity = entity(id: invoiceID), var record = entity.record else { throw StoreError.notFound }
         record.payments.removeAll { $0.id == paymentID }

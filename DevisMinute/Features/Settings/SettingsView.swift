@@ -16,6 +16,7 @@ struct SettingsView: View {
                 NavigationLink("Numérotation") { NumberingSettingsView() }
             }
             AppIconSection()
+            DueRemindersSection()
             Section {
                 Toggle("Verrouiller avec \(appLock.biometryLabel)", isOn: Binding(get: { store.appLockEnabled }, set: { try? store.setAppLock($0) }))
             } header: {
@@ -395,6 +396,41 @@ struct AppIconSection: View {
             } catch {
                 self.error = PresentedError(error)
             }
+        }
+    }
+}
+
+/// Activation des notifications d'échéance.
+struct DueRemindersSection: View {
+    @Environment(AppDataStore.self) private var store
+    @State private var enabled = ReminderScheduler.isEnabled
+    @State private var denied = false
+
+    var body: some View {
+        Section {
+            Toggle("Rappels d'échéance", isOn: Binding(get: { enabled }, set: { update($0) }))
+                .tint(Theme.petrol)
+            if denied {
+                Text("Les notifications sont refusées : autorisez-les dans Réglages › Notifications › DevisMinute.")
+                    .font(.footnote).foregroundStyle(Theme.danger)
+            }
+        } header: {
+            Text("Relances")
+        } footer: {
+            Text("Une notification le matin de l'échéance de chaque facture impayée, puis 7 jours après si elle n'est toujours pas réglée. Tout est calculé sur l'iPhone.")
+        }
+    }
+
+    private func update(_ value: Bool) {
+        Task { @MainActor in
+            if value {
+                enabled = await ReminderScheduler.enable()
+                denied = !enabled
+            } else {
+                await ReminderScheduler.disable()
+                enabled = false
+            }
+            await ReminderScheduler.refresh(records: store.allRecords())
         }
     }
 }

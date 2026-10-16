@@ -82,6 +82,8 @@ public struct DocumentRecord: Codable, Sendable, Equatable, Identifiable {
     public var isImported: Bool?
     /// Signature du client (devis acceptés sur l'iPhone).
     public var signature: QuoteSignature?
+    /// Relances envoyées pour une facture impayée.
+    public var reminders: [ReminderRecord]?
 
     public var id: UUID { document.id }
 

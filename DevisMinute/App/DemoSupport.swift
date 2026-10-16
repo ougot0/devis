@@ -10,7 +10,7 @@ import DevisPDF
 /// de données fictives, puis ouvre l'écran demandé. Sert aux captures d'écran automatiques.
 enum DemoSupport {
     enum Screen: String {
-        case onboarding, dashboard, quotes, invoices, customers, more, editor, detail, preview, statistics, signature, signed, signedpdf
+        case onboarding, dashboard, quotes, invoices, customers, more, editor, detail, preview, statistics, signature, signed, signedpdf, reminder
     }
 
     static var screen: Screen? {
@@ -30,6 +30,7 @@ enum DemoSupport {
     @MainActor static var featuredQuoteID: UUID?
     @MainActor static var featuredInvoiceID: UUID?
     @MainActor static var signedQuoteID: UUID?
+    @MainActor static var overdueInvoiceID: UUID?
 
     /// Signature manuscrite fictive (courbe générée), pour les captures.
     static var demoStrokes: [[CGPoint]] {
@@ -106,6 +107,7 @@ enum DemoSupport {
                     try? store.addPayment(invoiceID: issued.id, payment: PaymentRecord(date: daysAgo(max(age - 20, 1)), amount: paid))
                 }
                 featuredInvoiceID = issued.id
+                if age == 40 { overdueInvoiceID = issued.id }
             }
         }
 

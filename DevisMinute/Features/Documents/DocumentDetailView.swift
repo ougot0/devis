@@ -20,7 +20,7 @@ struct DocumentDetailView: View {
     @State private var celebration: Celebration?
 
     enum SheetKind: Identifiable {
-        case preview, payment, creditNote, deposit, signature
+        case preview, payment, creditNote, deposit, signature, send, reminder
         var id: Int { hashValue }
     }
 
@@ -47,6 +47,8 @@ struct DocumentDetailView: View {
                     case .creditNote: CreditNoteSheet(record: record) { created in openEditorAfterDismiss(created) }
                     case .deposit: DepositSheet(record: record) { created in openEditorAfterDismiss(created) }
                     case .signature: SignatureSheet(record: record) {}
+                    case .send: SendDocumentSheet(record: record, mode: .send)
+                    case .reminder: SendDocumentSheet(record: record, mode: .reminder)
                     }
                 }
             }
@@ -170,6 +172,9 @@ struct DocumentDetailView: View {
         let document = record.document
         if document.kind == .quote, let status = record.quoteStatus {
             let effective = QuoteLifecycle.effectiveStatus(status, validUntil: document.validUntil, today: Date())
+            if status != .refused {
+                Button { sheet = .send } label: { Label("Envoyer par e-mail", systemImage: "paperplane.fill") }
+            }
             if QuoteLifecycle.canSign(effective) {
                 Button { sheet = .signature } label: { Label("Faire signer le client", systemImage: "signature") }
                     .foregroundStyle(Theme.ochre)
@@ -206,6 +211,14 @@ struct DocumentDetailView: View {
             }
             Button(role: .destructive) { confirmDelete = true } label: { Label("Supprimer le brouillon", systemImage: "trash") }
         } else {
+            if !record.imported {
+                Button { sheet = .send } label: { Label("Envoyer par e-mail", systemImage: "paperplane.fill") }
+            }
+            if document.kind != .creditNote,
+               Accounting.ledger(for: record, in: allRecords).state(dueDate: document.dueDate, today: Date()) == .overdue {
+                Button { sheet = .reminder } label: { Label("Relancer le client", systemImage: "bell.badge") }
+                    .foregroundStyle(Theme.ochre)
+            }
             if document.kind != .creditNote {
                 Button { sheet = .payment } label: { Label("Enregistrer un paiement", systemImage: "eurosign.circle") }
                 Button { sheet = .creditNote } label: { Label("Corriger ou annuler par un avoir", systemImage: "arrow.uturn.left.circle") }
@@ -243,6 +256,10 @@ struct DocumentDetailView: View {
                 }
             }
             LabeledContent("Solde restant dû") { AmountText(value: ledger.balance, style: .headline) }
+            ForEach(record.reminders ?? []) { reminder in
+                Label("\(reminder.level.label) envoyé le \(DateFormatting.short(reminder.date))", systemImage: "bell")
+                    .font(.footnote).foregroundStyle(Theme.neutral)
+            }
         } header: {
             Text("Paiements")
         } footer: {

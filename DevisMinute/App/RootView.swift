@@ -25,7 +25,9 @@ struct RootView: View {
         }
         .onChange(of: scenePhase) { _, phase in
             if phase == .background && store.appLockEnabled { appLock.lock() }
+            if phase == .active { refreshBackgroundServices() }
         }
+        .onChange(of: store.revision) { _, _ in refreshBackgroundServices() }
         #if DEBUG
         .onAppear(perform: openDemoScreen)
         .sheet(item: $demoSheet) { sheet in
@@ -36,6 +38,7 @@ struct RootView: View {
                 case .preview(let record): PDFPreviewView(record: record)
                 case .statistics: StatisticsView()
                 case .signature(let record): SignatureSheet(record: record, initialStrokes: DemoSupport.demoStrokes) {}
+                case .reminder(let record): SendDocumentSheet(record: record, mode: .reminder)
                 }
             }
         }
@@ -44,10 +47,11 @@ struct RootView: View {
 
     #if DEBUG
     enum DemoSheet: Identifiable {
-        case editor(DocumentRecord), detail(UUID), preview(DocumentRecord), statistics, signature(DocumentRecord)
+        case editor(DocumentRecord), detail(UUID), preview(DocumentRecord), statistics, signature(DocumentRecord), reminder(DocumentRecord)
         var id: String {
             switch self {
             case .signature: return "signature"
+            case .reminder: return "reminder"
             case .editor: return "editor"
             case .detail: return "detail"
             case .preview: return "preview"
@@ -83,12 +87,21 @@ struct RootView: View {
         case .signed:
             selection = .quotes
             if let id = DemoSupport.signedQuoteID { demoSheet = .detail(id) }
+        case .reminder:
+            selection = .invoices
+            if let id = DemoSupport.overdueInvoiceID, let record = store.record(id: id) { demoSheet = .reminder(record) }
         case .signedpdf:
             selection = .quotes
             if let id = DemoSupport.signedQuoteID, let record = store.record(id: id) { demoSheet = .preview(record) }
         }
     }
     #endif
+
+    /// Notifications d'échéance (et, plus tard, widgets) recalculées après chaque modification.
+    private func refreshBackgroundServices() {
+        let records = store.allRecords()
+        Task { await ReminderScheduler.refresh(records: records) }
+    }
 
     private var tabs: some View {
         TabView(selection: $selection) {

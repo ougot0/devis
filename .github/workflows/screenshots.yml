@@ -49,6 +49,7 @@ jobs:
           capture signature 13-signature-client
           capture signed 14-devis-signe
           capture signedpdf 15-pdf-signe
+          capture reminder 16-relance
           xcrun simctl ui "$DEVICE" appearance dark
           capture dashboard 11-accueil-sombre
           capture editor 12-editeur-sombre
