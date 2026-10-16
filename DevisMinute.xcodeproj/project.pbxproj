@@ -7,11 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7A9459F60E9D61FA36EBECDD /* DevisCore in Frameworks */ = {isa = PBXBuildFile; productRef = D277F9355EA9F7832F4CE01C /* DevisCore */; };
+		CE271BEED9033405069A9A0E /* DevisMinuteWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 1AFBCB6290C6BF182D2F7FBE /* DevisMinuteWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		405F5A2D1D63DB7B95007A26 /* DevisCore in Frameworks */ = {isa = PBXBuildFile; productRef = B5336A3E10106D7E74058249 /* DevisCore */; };
 		0C2910CF0485528021C5AC11 /* DevisPDF in Frameworks */ = {isa = PBXBuildFile; productRef = 56E812687BB5022B82E02010 /* DevisPDF */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		20A01B179787A51ADD1A261A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 46F86FAA6BBF9AC94A7E4595 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DF9889D361A99AD56D08AF2D;
+			remoteInfo = DevisMinuteWidget;
+		};
 		3AAB893A2F03A5775690C89F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 46F86FAA6BBF9AC94A7E4595 /* Project object */;
@@ -21,7 +30,24 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		EAD1A41FAE91366FB216996B /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				CE271BEED9033405069A9A0E /* DevisMinuteWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		1AFBCB6290C6BF182D2F7FBE /* DevisMinuteWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DevisMinuteWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FED21E4CCD278B4E1E04B7A7 /* DevisMinuteWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DevisMinuteWidget.entitlements; sourceTree = "<group>"; };
+		1655E2BF77CF28658DD0A840 /* DevisMinuteWidget-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DevisMinuteWidget-Info.plist"; sourceTree = "<group>"; };
 		81918909E83595C8F4212CCC /* DevisMinute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DevisMinute.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		858E33F033846B57054E0712 /* DevisMinuteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DevisMinuteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5482E0D56B0F234B61D53975 /* DevisMinute.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DevisMinute.entitlements; sourceTree = "<group>"; };
@@ -29,6 +55,11 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		88E43698785EBCACBFE32930 /* DevisMinuteWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = DevisMinuteWidget;
+			sourceTree = "<group>";
+		};
 		FDA31503C7EA89B18AA63554 /* DevisMinute */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = DevisMinute;
@@ -42,6 +73,14 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		E1583C3999CBCE0D2B2247E2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7A9459F60E9D61FA36EBECDD /* DevisCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0248D6DB510EB0F7E9C05175 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -66,6 +105,7 @@
 			children = (
 				FDA31503C7EA89B18AA63554 /* DevisMinute */,
 				EE38E7FB1100DD18CC715F16 /* DevisMinuteTests */,
+				88E43698785EBCACBFE32930 /* DevisMinuteWidget */,
 				7173545D75AC56744F55E81B /* Config */,
 				1BADDC1D73C1A20F347483E1 /* Products */,
 			);
@@ -76,6 +116,8 @@
 			children = (
 				5482E0D56B0F234B61D53975 /* DevisMinute.entitlements */,
 				ABB2F1E35FA7087102BDA747 /* Products.storekit */,
+				FED21E4CCD278B4E1E04B7A7 /* DevisMinuteWidget.entitlements */,
+				1655E2BF77CF28658DD0A840 /* DevisMinuteWidget-Info.plist */,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -85,6 +127,7 @@
 			children = (
 				81918909E83595C8F4212CCC /* DevisMinute.app */,
 				858E33F033846B57054E0712 /* DevisMinuteTests.xctest */,
+				1AFBCB6290C6BF182D2F7FBE /* DevisMinuteWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -92,6 +135,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		DF9889D361A99AD56D08AF2D /* DevisMinuteWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4E23A7018B775737147ED42B /* Build configuration list for PBXNativeTarget "DevisMinuteWidget" */;
+			buildPhases = (
+				AB139B1B37E9CB3A8CEB1942 /* Sources */,
+				E1583C3999CBCE0D2B2247E2 /* Frameworks */,
+				D1E7D8D1D3D74DE06FCD4D32 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				88E43698785EBCACBFE32930 /* DevisMinuteWidget */,
+			);
+			name = DevisMinuteWidget;
+			packageProductDependencies = (
+				D277F9355EA9F7832F4CE01C /* DevisCore */,
+			);
+			productName = DevisMinuteWidget;
+			productReference = 1AFBCB6290C6BF182D2F7FBE /* DevisMinuteWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		3D4C91345015A4DD0A099400 /* DevisMinute */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A7698C201D2A724C7CAD56C8 /* Build configuration list for PBXNativeTarget "DevisMinute" */;
@@ -99,10 +165,12 @@
 				DA10D9DD089DF2AFEBC5ED5A /* Sources */,
 				0248D6DB510EB0F7E9C05175 /* Frameworks */,
 				82A968CB662751220D4DFE2D /* Resources */,
+				EAD1A41FAE91366FB216996B /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				33BFBDA485400D79B46EE11D /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				FDA31503C7EA89B18AA63554 /* DevisMinute */,
@@ -156,6 +224,9 @@
 						CreatedOnToolsVersion = 16.0;
 						TestTargetID = 3D4C91345015A4DD0A099400;
 					};
+					DF9889D361A99AD56D08AF2D = {
+						CreatedOnToolsVersion = 16.0;
+					};
 				};
 			};
 			buildConfigurationList = 56283EBD6DD86A56CED63937 /* Build configuration list for PBXProject "DevisMinute" */;
@@ -177,11 +248,19 @@
 			targets = (
 				3D4C91345015A4DD0A099400 /* DevisMinute */,
 				DFEE19449146DDDB4DD78AD1 /* DevisMinuteTests */,
+				DF9889D361A99AD56D08AF2D /* DevisMinuteWidget */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		D1E7D8D1D3D74DE06FCD4D32 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		82A968CB662751220D4DFE2D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -199,6 +278,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		AB139B1B37E9CB3A8CEB1942 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DA10D9DD089DF2AFEBC5ED5A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -216,6 +302,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		33BFBDA485400D79B46EE11D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DF9889D361A99AD56D08AF2D /* DevisMinuteWidget */;
+			targetProxy = 20A01B179787A51ADD1A261A /* PBXContainerItemProxy */;
+		};
 		EBE8F3D6D5F03BFD34393319 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3D4C91345015A4DD0A099400 /* DevisMinute */;
@@ -224,6 +315,60 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		A2050B53896ECFCFB600B14F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Config/DevisMinuteWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/DevisMinuteWidget-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = DevisMinute;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.devisminute.app.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		6579DD506EA75C5E754E3ACB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = Config/DevisMinuteWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/DevisMinuteWidget-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = DevisMinute;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.devisminute.app.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 		FA9139DD8B03E3F922556BF8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -404,6 +549,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		4E23A7018B775737147ED42B /* Build configuration list for PBXNativeTarget "DevisMinuteWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A2050B53896ECFCFB600B14F /* Debug */,
+				6579DD506EA75C5E754E3ACB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		56283EBD6DD86A56CED63937 /* Build configuration list for PBXProject "DevisMinute" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -441,6 +595,11 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		D277F9355EA9F7832F4CE01C /* DevisCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2BCD311588779502C5D39910 /* XCLocalSwiftPackageReference "DevisMinuteKit" */;
+			productName = DevisCore;
+		};
 		B5336A3E10106D7E74058249 /* DevisCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 2BCD311588779502C5D39910 /* XCLocalSwiftPackageReference "DevisMinuteKit" */;

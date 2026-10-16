@@ -26,6 +26,8 @@ targets:
         product: DevisCore
       - package: DevisMinuteKit
         product: DevisPDF
+      - target: DevisMinuteWidget
+        embed: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.devisminute.app
@@ -48,6 +50,27 @@ targets:
       testTargets:
         - DevisMinuteTests
       storeKitConfiguration: Config/Products.storekit
+  DevisMinuteWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: DevisMinuteWidget
+    dependencies:
+      - package: DevisMinuteKit
+        product: DevisCore
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.devisminute.app.widget
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: Config/DevisMinuteWidget-Info.plist
+        INFOPLIST_KEY_CFBundleDisplayName: DevisMinute
+        CODE_SIGN_ENTITLEMENTS: Config/DevisMinuteWidget.entitlements
+        APPLICATION_EXTENSION_API_ONLY: YES
+        SKIP_INSTALL: YES
   DevisMinuteTests:
     type: bundle.unit-test
     platform: iOS

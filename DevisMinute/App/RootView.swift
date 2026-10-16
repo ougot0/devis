@@ -107,10 +107,11 @@ struct RootView: View {
     }
     #endif
 
-    /// Notifications d'échéance (et, plus tard, widgets) recalculées après chaque modification.
+    /// Notifications d'échéance et widgets recalculés après chaque modification.
     private func refreshBackgroundServices() {
         let records = store.allRecords()
         Task { await ReminderScheduler.refresh(records: records) }
+        WidgetBridge.publish(store: store, records: records)
     }
 
     private var tabs: some View {

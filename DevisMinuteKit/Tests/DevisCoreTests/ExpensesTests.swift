@@ -46,3 +46,31 @@ final class ExpensesTests: XCTestCase {
         XCTAssertNil(try JSONDecoder().decode(BackupSnapshot.self, from: JSONSerialization.data(withJSONObject: json)).expenses)
     }
 }
+
+final class WidgetSnapshotTests: XCTestCase {
+    func testSnapshotTotalsAndOrdering() throws {
+        func invoice(_ number: String, due: Date, paid: Decimal = 0) -> DocumentRecord {
+            var document = Fixtures.invoice(lines: [Fixtures.line("A", qty: "1", price: "100")])
+            document.id = UUID()
+            document.number = number
+            document.dueDate = due
+            return DocumentRecord(document: document, invoiceStatus: .issued, payments: paid > 0 ? [PaymentRecord(date: Fixtures.date(2026, 10, 5), amount: paid)] : [])
+        }
+        let records = [
+            invoice("F-1", due: Fixtures.date(2026, 11, 20)),
+            invoice("F-2", due: Fixtures.date(2026, 10, 2), paid: 20),
+            invoice("F-3", due: Fixtures.date(2026, 11, 1), paid: 120),
+        ]
+        let snapshot = WidgetSnapshot.make(records: records, companyName: "Atelier", monthGoal: 600, isPrivate: false, today: Fixtures.date(2026, 10, 15))
+        XCTAssertEqual(snapshot.outstanding, 220)
+        XCTAssertEqual(snapshot.unpaidCount, 2)
+        XCTAssertEqual(snapshot.overdueCount, 1)
+        XCTAssertEqual(snapshot.overdueAmount, 100)
+        XCTAssertEqual(snapshot.upcoming.map(\.number), ["F-2", "F-1"], "Retards d'abord")
+        XCTAssertEqual(snapshot.monthInvoicedHT, 300)
+        XCTAssertEqual(snapshot.monthCollected, 140)
+        XCTAssertEqual(snapshot.goalProgress, 0.5)
+        let decoded = try JSONDecoder().decode(WidgetSnapshot.self, from: JSONEncoder().encode(snapshot))
+        XCTAssertEqual(decoded, snapshot)
+    }
+}
