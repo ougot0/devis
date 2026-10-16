@@ -44,7 +44,7 @@ struct ExpenseListView: View {
                     }
                 } header: {
                     HStack {
-                        Text(group.month.formatted(.dateTime.month(.wide).year().locale(Locale(identifier: "fr_FR"))).capitalized)
+                        Text(MicroCalculator.title(for: DateInterval(start: group.month, duration: 86_400), frequency: .monthly))
                         Spacer()
                         Text(Money.format(group.items.reduce(Decimal(0)) { $0 + $1.amountTTC }) + " TTC")
                     }
