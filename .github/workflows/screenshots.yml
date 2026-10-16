@@ -7,6 +7,11 @@ on:
 permissions:
   contents: write
 
+# Une seule série de captures à la fois par branche : la plus récente remplace les autres.
+concurrency:
+  group: captures-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   screenshots:
     name: Captures sur simulateur iPhone
@@ -68,4 +73,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/captures
           git diff --cached --quiet || git commit -m "Captures d'écran automatiques (simulateur, données fictives)"
+          git pull --rebase origin ${GITHUB_REF_NAME} || true
           git push origin HEAD:${GITHUB_REF_NAME}

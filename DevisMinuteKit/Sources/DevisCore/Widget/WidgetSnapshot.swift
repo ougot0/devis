@@ -33,6 +33,10 @@ public struct WidgetSnapshot: Codable, Sendable, Equatable {
         return NSDecimalNumber(decimal: monthInvoicedHT / monthGoal).doubleValue
     }
 
+    /// Aucune donnée publiée (application jamais ouverte).
+    public static let empty = WidgetSnapshot(generatedAt: Date(), companyName: "", outstanding: 0, unpaidCount: 0, overdueAmount: 0, overdueCount: 0,
+                                             monthInvoicedHT: 0, monthCollected: 0, monthGoal: nil, upcoming: [], isPrivate: false)
+
     /// Exemple affiché dans la galerie des widgets.
     public static let placeholder = WidgetSnapshot(
         generatedAt: Date(), companyName: "Mon entreprise", outstanding: Decimal.exact("8290.40"), unpaidCount: 4,

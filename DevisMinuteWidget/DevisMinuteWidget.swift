@@ -37,11 +37,6 @@ struct SnapshotProvider: TimelineProvider {
     }
 }
 
-extension WidgetSnapshot {
-    static let empty = WidgetSnapshot(generatedAt: Date(), companyName: "", outstanding: 0, unpaidCount: 0, overdueAmount: 0, overdueCount: 0,
-                                      monthInvoicedHT: 0, monthCollected: 0, monthGoal: nil, upcoming: [], isPrivate: false)
-}
-
 // MARK: - Couleurs (identiques à l'application)
 
 enum WidgetColors {
