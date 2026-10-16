@@ -301,3 +301,55 @@ extension RenderSession {
         y = top + height + 10
     }
 }
+
+extension RenderSession {
+    /// Section « Photos » : grille de deux colonnes, légende sous chaque photo, jamais coupée entre deux pages.
+    func drawPhotos() {
+        let photos = request.photos.prefix(DocumentPhoto.maximumCount).compactMap { photo -> (PDFImage, String)? in
+            guard let image = PDFImage(jpegData: photo.jpeg), image.pixelWidth > 0, image.pixelHeight > 0 else { return nil }
+            return (image, photo.caption.trimmed)
+        }
+        if photos.count < request.photos.prefix(DocumentPhoto.maximumCount).count {
+            warnings.append("Une photo n'a pas pu être lue et n'est pas imprimée.")
+        }
+        guard !photos.isEmpty else { return }
+        let titleStyle = TextStyle(font: fonts.heading, size: bodySize + 1, color: template == .minimal ? ink : accent)
+        let captionStyle = TextStyle(font: fonts.body, size: bodySize - 1, color: muted)
+        let gap = 14.0
+        let cellWidth = (contentWidth - gap) / 2
+        let maxImageHeight = 170.0
+        var first = true
+        for start in stride(from: 0, to: photos.count, by: 2) {
+            let row = Array(photos[start..<min(start + 2, photos.count)])
+            let sizes = row.map { image, _ -> (Double, Double) in
+                let ratio = Double(image.pixelWidth) / Double(image.pixelHeight)
+                var width = cellWidth
+                var height = width / ratio
+                if height > maxImageHeight { height = maxImageHeight; width = height * ratio }
+                return (width, height)
+            }
+            let captionHeight = row.map { $0.1.isEmpty ? 0 : TextLayout.height($0.1, style: captionStyle, width: cellWidth) + 4 }.max() ?? 0
+            let rowHeight = (sizes.map(\.1).max() ?? 0) + captionHeight + gap
+            let heading = first ? titleStyle.lineHeight + 8 : 0
+            ensureSpace(heading + rowHeight)
+            if first {
+                y += 6
+                page.text("Photos", x: marginLeft, baseline: y + titleStyle.size, font: titleStyle.font, size: titleStyle.size, color: titleStyle.color)
+                y += titleStyle.lineHeight + 8
+                first = false
+            }
+            let imageAreaHeight = sizes.map(\.1).max() ?? 0
+            for (index, item) in row.enumerated() {
+                let x = marginLeft + Double(index) * (cellWidth + gap)
+                let (width, height) = sizes[index]
+                let handle = builder.register(image: item.0)
+                page.image(handle, x: x + (cellWidth - width) / 2, y: y + (imageAreaHeight - height), width: width, height: height)
+                page.strokeRect(x: x + (cellWidth - width) / 2, y: y + (imageAreaHeight - height), width: width, height: height, color: hairline, lineWidth: 0.4)
+                if !item.1.isEmpty {
+                    page.paragraph(item.1, x: x, top: y + imageAreaHeight + 4, width: cellWidth, style: captionStyle, alignment: .center)
+                }
+            }
+            y += rowHeight
+        }
+    }
+}

@@ -134,6 +134,23 @@ struct DocumentDetailView: View {
                 }
             }
 
+            if let photos = record.photos, !photos.isEmpty {
+                Section("Photos") {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: Theme.Space.s) {
+                            ForEach(photos) { photo in
+                                if let image = UIImage(data: photo.jpeg) {
+                                    Image(uiImage: image).resizable().scaledToFill()
+                                        .frame(width: 96, height: 72)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        .accessibilityLabel(photo.caption.isEmpty ? "Photo" : photo.caption)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             if let signature = record.signature {
                 signatureSection(signature, document: document)
             }

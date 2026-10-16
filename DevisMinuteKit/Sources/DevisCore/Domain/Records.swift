@@ -84,6 +84,8 @@ public struct DocumentRecord: Codable, Sendable, Equatable, Identifiable {
     public var signature: QuoteSignature?
     /// Relances envoyées pour une facture impayée.
     public var reminders: [ReminderRecord]?
+    /// Photos jointes (chantier, produit…), imprimées en fin de PDF.
+    public var photos: [DocumentPhoto]?
 
     public var id: UUID { document.id }
 
@@ -103,6 +105,23 @@ public struct DocumentRecord: Codable, Sendable, Equatable, Identifiable {
     public var isIssuedInvoice: Bool { document.kind.isInvoiceLike && invoiceStatus == .issued }
 
     public var imported: Bool { isImported == true }
+}
+
+/// Photo jointe à un devis ou une facture.
+public struct DocumentPhoto: Codable, Sendable, Equatable, Identifiable {
+    /// Nombre maximal de photos par document.
+    public static let maximumCount = 8
+
+    public var id: UUID
+    /// Photo en JPEG (réduite par l'application).
+    public var jpeg: Data
+    public var caption: String
+
+    public init(id: UUID = UUID(), jpeg: Data, caption: String = "") {
+        self.id = id
+        self.jpeg = jpeg
+        self.caption = caption
+    }
 }
 
 /// Calculs transverses entre documents (avoirs imputés, soldes).

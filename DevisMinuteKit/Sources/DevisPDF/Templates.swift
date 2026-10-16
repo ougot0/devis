@@ -150,9 +150,12 @@ public struct RenderRequest: Sendable {
     public var paymentQRCodeJPEG: Data?
     /// Signature du client : imprimée dans la zone « Bon pour accord » d'un devis.
     public var signature: QuoteSignature?
+    /// Photos imprimées dans une section « Photos » en fin de document.
+    public var photos: [DocumentPhoto]
     public var generatedAt: Date
 
-    public init(document: BusinessDocument, appearance: DocumentAppearance, logoJPEG: Data? = nil, payment: PaymentSummary? = nil, isDraft: Bool = false, generatedAt: Date = Date(), paymentQRCodeJPEG: Data? = nil, signature: QuoteSignature? = nil) {
+    public init(document: BusinessDocument, appearance: DocumentAppearance, logoJPEG: Data? = nil, payment: PaymentSummary? = nil, isDraft: Bool = false, generatedAt: Date = Date(), paymentQRCodeJPEG: Data? = nil, signature: QuoteSignature? = nil, photos: [DocumentPhoto] = []) {
+        self.photos = photos
         self.paymentQRCodeJPEG = paymentQRCodeJPEG
         self.signature = signature
         self.document = document

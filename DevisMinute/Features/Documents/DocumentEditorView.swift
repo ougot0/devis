@@ -39,6 +39,7 @@ struct DocumentEditorView: View {
             datesSection
             optionsSection
             textsSection
+            PhotosSection(photos: $record.photos)
             complianceSection
         }
         .appBackground()

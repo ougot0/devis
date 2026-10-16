@@ -109,6 +109,7 @@ final class RenderSession {
         drawTable()
         drawTotals()
         drawClosingBlocks()
+        drawPhotos()
         drawFooters()
     }
 

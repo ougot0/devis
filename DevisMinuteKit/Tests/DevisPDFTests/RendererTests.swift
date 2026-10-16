@@ -210,3 +210,23 @@ final class SignatureBlockTests: XCTestCase {
         XCTAssertFalse(String(decoding: result.data, as: UTF8.self).contains("par Paul Petit"))
     }
 }
+
+final class PhotosSectionTests: XCTestCase {
+    func testPhotosArePrintedWithCaptions() throws {
+        let photos = (1...5).map { DocumentPhoto(jpeg: SampleData.logoJPEG, caption: "Photo \($0) — avant travaux") } + [DocumentPhoto(jpeg: Data([1, 2, 3]))]
+        let result = DocumentPDFRenderer.render(RenderRequest(document: SampleData.quote(lineCount: 4), appearance: DocumentAppearance(template: .chantier), photos: photos))
+        let text = String(decoding: result.data, as: UTF8.self)
+        XCTAssertTrue(text.contains("(Photos)"))
+        XCTAssertTrue(text.contains("Photo 5"))
+        XCTAssertEqual(text.components(separatedBy: "/Subtype /Image").count - 1, 5, "Une image par photo lisible")
+        XCTAssertTrue(result.warnings.contains { $0.contains("photo") }, "La photo illisible est signalée")
+        if let directory = ProcessInfo.processInfo.environment["DEVIS_PDF_OUTPUT"] {
+            try result.data.write(to: URL(fileURLWithPath: directory).appendingPathComponent("devis-photos.pdf"))
+        }
+    }
+
+    func testNoPhotoSectionWithoutPhotos() {
+        let text = String(decoding: DocumentPDFRenderer.render(RenderRequest(document: SampleData.quote(lineCount: 2), appearance: DocumentAppearance())).data, as: UTF8.self)
+        XCTAssertFalse(text.contains("(Photos)"))
+    }
+}
