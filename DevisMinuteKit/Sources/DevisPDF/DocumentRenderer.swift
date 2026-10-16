@@ -40,7 +40,10 @@ final class RenderSession {
     let request: RenderRequest
     let document: BusinessDocument
     let totals: DocumentTotals
+    /// Modèle de base (tableau, totaux, marges, pied de page).
     let template: DocumentTemplate
+    /// Modèle choisi (en-tête et décor propres aux variantes).
+    let style: DocumentTemplate
     let fonts: FontPairing
     let accent: PDFColor
     let builder = PDFDocumentBuilder()
@@ -68,7 +71,8 @@ final class RenderSession {
         self.request = request
         self.document = request.document
         self.totals = DocumentCalculator.totals(for: request.document)
-        self.template = request.appearance.template
+        self.template = request.appearance.template.layout
+        self.style = request.appearance.template
         self.fonts = request.appearance.fontPairing
         self.accent = request.appearance.accentColor
         switch template {
@@ -135,6 +139,9 @@ final class RenderSession {
         if template == .corporate && !first {
             page.fillRect(x: 0, y: 0, width: pageWidth, height: 6, color: accent)
         }
+        if style == .chantier { drawHazardStripe(y: 0) }
+        if style == .prestige && !first { page.fillRect(x: 0, y: 0, width: pageWidth, height: 8, color: ink) }
+        if style == .nature && !first { page.fillRect(x: 0, y: 0, width: pageWidth, height: 5, color: accent) }
         if !first { drawContinuationHeader() }
     }
 

@@ -93,7 +93,7 @@ extension RenderSession {
             drawVerticalRules(columns, top: y, height: height, color: accent.tinted(0.4))
         case .technique:
             drawVerticalRules(columns, top: y, height: height, color: hairline)
-        case .corporate:
+        default:
             break
         }
         y += height

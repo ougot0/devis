@@ -116,6 +116,8 @@ extension RenderSession {
                     page.line(from: (x, cursor), to: (right, cursor), color: ink, lineWidth: 0.4)
                 case .creatif:
                     valueStyle.color = accent
+                default:
+                    break
                 }
             }
             let baseline = cursor + height / 2 + labelStyle.size * 0.35

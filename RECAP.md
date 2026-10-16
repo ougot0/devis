@@ -20,7 +20,7 @@ Les contraintes du cahier des charges de départ :
 | Moteur de calcul (montants exacts, TVA par taux, remises, acomptes, paiements) | ✅ fait et testé |
 | Numérotation des factures (chronologique, sans trou), factures émises verrouillées, avoirs | ✅ fait et testé |
 | Contrôle des mentions obligatoires avant d'émettre une facture | ✅ fait et testé |
-| Générateur de PDF, **8 modèles** (Classique, Corporate, Minimal, Artisan, Créatif, Élégant, Technique, Moderne) | ✅ fait et testé |
+| Générateur de PDF, **14 modèles** (Classique, Corporate, Minimal, Artisan, Créatif, Élégant, Technique, Moderne, Nature, Prestige, Chantier, Pastel, Ardoise, Compact) | ✅ fait et testé |
 | Application iPhone : accueil, devis, factures, clients, catalogue, statistiques, rentabilité, réglages, sauvegarde | ✅ écrite, compile, se lance sur le simulateur |
 | Sauvegarde chiffrée + restauration vérifiée, exports et imports CSV | ✅ fait et testé |
 | Documentation (compilation, publication App Store, guide utilisateur, conformité) | ✅ dans le dossier `docs/` |
@@ -41,9 +41,9 @@ L'application sur un simulateur d'iPhone, avec des données fictives.
 | ![Fiche facture](docs/captures/07-fiche-facture.png) | ![Statistiques](docs/captures/09-statistiques.png) | ![Mode sombre](docs/captures/11-accueil-sombre.png) |
 | Fiche d'une facture | Statistiques | Mode sombre |
 
-Les 8 modèles de PDF :
+Les 14 modèles de PDF :
 
-![Les 8 modèles](docs/modeles.png)
+![Les 14 modèles](docs/modeles.png)
 
 ## 4. Points importants à connaître
 

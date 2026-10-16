@@ -19,7 +19,7 @@ UN DEVIS EN MOINS DE DEUX MINUTES
 • Remises en % ou en €, plusieurs taux de TVA, acompte, sections, lignes réorganisables.
 
 DES DOCUMENTS SOIGNÉS
-• 8 modèles réellement différents : Classique, Corporate, Minimal, Artisan, Créatif, Élégant, Technique, Moderne.
+• 14 modèles réellement différents : Classique, Corporate, Minimal, Artisan, Créatif, Élégant, Technique, Moderne, Nature, Prestige, Chantier, Pastel, Ardoise, Compact.
 • Votre logo, votre couleur, votre typographie.
 • PDF multipages impeccables, aperçu avant envoi, partage par Mail, Messages ou AirDrop.
 
@@ -52,10 +52,10 @@ DevisMinute crée des devis et des factures au format PDF. Il n'est pas relié �
 
 ## Captures d'écran conseillées (dans cet ordre)
 1. Éditeur de devis avec totaux — « Votre devis en moins de deux minutes »
-2. Aperçu PDF du modèle Artisan ou Élégant — « 8 modèles professionnels »
+2. Aperçu PDF du modèle Artisan ou Élégant — « 14 modèles professionnels »
 3. Tableau de bord — « Facturé, encaissé, en retard : l'essentiel d'un coup d'œil »
 4. Fiche facture avec paiements — « Paiements partiels et relances simplifiées »
-5. Planche des 8 modèles — « Votre image, votre logo, vos couleurs »
+5. Planche des 14 modèles — « Votre image, votre logo, vos couleurs »
 6. Écran de sauvegarde — « Vos données restent sur votre iPhone »
 
 Les captures doivent montrer des données fictives cohérentes (créées dans l'application, aucun montant inventé dans le code).

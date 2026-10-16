@@ -8,16 +8,16 @@ Application iPhone de devis, de facturation et de gestion commerciale simplifié
 
 | Dossier | Contenu |
 |---|---|
-| `DevisMinuteKit/` | Package Swift indépendant de l'interface. `DevisCore` : modèles, calculs en `Decimal`, numérotation, statuts, conformité, sceaux d'intégrité, sauvegarde chiffrée, CSV, statistiques, rentabilité, export CII. `DevisPDF` : moteur PDF en Swift pur et les 8 modèles de documents. |
+| `DevisMinuteKit/` | Package Swift indépendant de l'interface. `DevisCore` : modèles, calculs en `Decimal`, numérotation, statuts, conformité, sceaux d'intégrité, sauvegarde chiffrée, CSV, statistiques, rentabilité, export CII. `DevisPDF` : moteur PDF en Swift pur et les 14 modèles de documents. |
 | `DevisMinute/` | Application iOS : SwiftUI, persistance SwiftData, StoreKit 2, ressources. |
 | `DevisMinuteTests/` | Tests d'intégration de l'application (base SwiftData en mémoire). |
 | `DevisMinute.xcodeproj` | Projet Xcode 16 (dossiers synchronisés). `project.yml` permet de le régénérer avec XcodeGen si besoin. |
 | `Config/` | Droits (protection des données), configuration StoreKit de test. |
 | `docs/` | Documentation complète. |
 
-## Les 8 modèles de documents
+## Les 14 modèles de documents
 
-![Les 8 modèles](docs/modeles.png)
+![Les 14 modèles](docs/modeles.png)
 
 De gauche à droite : Classique, Corporate, Minimal, Artisan / Créatif, Élégant, Technique, Moderne (rendus réels du moteur PDF).
 

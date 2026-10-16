@@ -34,7 +34,7 @@ enum PremiumFeature: String, CaseIterable {
 
     var label: String {
         switch self {
-        case .allTemplates: return "Les 8 modèles de documents"
+        case .allTemplates: return "Les 14 modèles de documents"
         case .statistics: return "Statistiques détaillées"
         case .csvExport: return "Exports CSV"
         case .structuredExport: return "Export des données structurées (XML CII)"

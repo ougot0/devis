@@ -5,6 +5,15 @@ import DevisCore
 extension RenderSession {
 
     func drawFirstPageHeader() {
+        switch style {
+        case .nature: return headerNature()
+        case .prestige: return headerPrestige()
+        case .chantier: return headerChantier()
+        case .pastel: return headerPastel()
+        case .ardoise: return headerArdoise()
+        case .compact: return headerCompact()
+        default: break
+        }
         switch template {
         case .classique: headerClassique()
         case .corporate: headerCorporate()
@@ -14,6 +23,7 @@ extension RenderSession {
         case .elegant: headerElegant()
         case .technique: headerTechnique()
         case .moderne: headerModerne()
+        default: headerClassique()
         }
     }
 

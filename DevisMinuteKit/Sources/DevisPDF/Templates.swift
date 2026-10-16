@@ -1,8 +1,9 @@
 import Foundation
 import DevisCore
 
-/// Les 8 modèles de documents. Chacun a sa propre composition (en-tête, tableau, totaux),
-/// tout en imprimant les mêmes mentions obligatoires.
+/// Les 14 modèles de documents. Chacun a sa propre composition d'en-tête ; les six derniers
+/// reprennent le tableau et les totaux d'un modèle de base (`layout`).
+/// Tous impriment les mêmes mentions obligatoires.
 public enum DocumentTemplate: String, Codable, Sendable, CaseIterable, Identifiable {
     case classique
     case corporate
@@ -12,6 +13,12 @@ public enum DocumentTemplate: String, Codable, Sendable, CaseIterable, Identifia
     case elegant
     case technique
     case moderne
+    case nature
+    case prestige
+    case chantier
+    case pastel
+    case ardoise
+    case compact
 
     public var id: String { rawValue }
 
@@ -25,6 +32,12 @@ public enum DocumentTemplate: String, Codable, Sendable, CaseIterable, Identifia
         case .elegant: return "Élégant"
         case .technique: return "Technique"
         case .moderne: return "Moderne"
+        case .nature: return "Nature"
+        case .prestige: return "Prestige"
+        case .chantier: return "Chantier"
+        case .pastel: return "Pastel"
+        case .ardoise: return "Ardoise"
+        case .compact: return "Compact"
         }
     }
 
@@ -38,6 +51,12 @@ public enum DocumentTemplate: String, Codable, Sendable, CaseIterable, Identifia
         case .elegant: return "Composition centrée, romaine, doubles filets. Services premium."
         case .technique: return "Dense et précis : lignes numérotées, sous-totaux par section, récapitulatif de TVA détaillé."
         case .moderne: return "Encart de synthèse en tête, blocs teintés, en-têtes de colonnes en petites capitales."
+        case .nature: return "Vert tilleul, titres romains, encart client teinté. Paysagistes, bien-être, commerces de proximité."
+        case .prestige: return "Bandeau sombre pleine largeur, titre doré centré. Architectes, conseil, événementiel."
+        case .chantier: return "Bande de signalisation, titre en bloc noir, tableau quadrillé. BTP, plomberie, électricité."
+        case .pastel: return "Grand encart pastel avec le total à payer, mise en page aérée. Photographes, coachs, créateurs."
+        case .ardoise: return "Colonne ardoise pour l'émetteur, références alignées à droite. Agences et indépendants."
+        case .compact: return "Tout tient sur une page : en-tête sur deux lignes, petite typographie. Dépannage, livraisons."
         }
     }
 
@@ -51,15 +70,34 @@ public enum DocumentTemplate: String, Codable, Sendable, CaseIterable, Identifia
         case .elegant: return "#6B5B3E"
         case .technique: return "#245A64"
         case .moderne: return "#2E6B5E"
+        case .nature: return "#4E7A3A"
+        case .prestige: return "#A67C2E"
+        case .chantier: return "#D9661F"
+        case .pastel: return "#8A6FB0"
+        case .ardoise: return "#3B4A54"
+        case .compact: return "#245A64"
         }
     }
 
     public var defaultFontPairing: FontPairing {
         switch self {
-        case .classique, .corporate, .minimal, .artisan, .moderne: return .sans
-        case .creatif: return .serifHeadings
-        case .elegant: return .serif
+        case .classique, .corporate, .minimal, .artisan, .moderne, .chantier, .ardoise, .compact: return .sans
+        case .creatif, .nature, .pastel: return .serifHeadings
+        case .elegant, .prestige: return .serif
         case .technique: return .technical
+        }
+    }
+
+    /// Modèle de base dont sont repris le tableau, les totaux, les marges et le pied de page.
+    public var layout: DocumentTemplate {
+        switch self {
+        case .nature: return .moderne
+        case .prestige: return .elegant
+        case .chantier: return .artisan
+        case .pastel: return .minimal
+        case .ardoise: return .classique
+        case .compact: return .technique
+        default: return self
         }
     }
 }

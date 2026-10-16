@@ -11,7 +11,7 @@
 | Élément | Vérification réalisée |
 |---|---|
 | `DevisCore` (calculs, numérotation, statuts, conformité, sceaux, sauvegarde, CSV, statistiques, rentabilité, CII) | Compilé et testé sous Linux (Swift 6.0.3) : 81 tests |
-| `DevisPDF` (moteur PDF, 8 modèles, multipage) | Compilé et testé sous Linux : 13 tests ; PDF validés structurellement (table xref) et contrôlés visuellement après conversion en images (poppler) |
+| `DevisPDF` (moteur PDF, 14 modèles, multipage) | Compilé et testé sous Linux : 13 tests ; PDF validés structurellement (table xref) et contrôlés visuellement après conversion en images (poppler) |
 | Application iOS (`DevisMinute/`) | Compilée par `xcodebuild` sur GitHub Actions (`macos-15`, simulateur iPhone 16 Pro, SDK iOS 26.2) ; 7 tests d'intégration `AppDataStoreTests` réussis (émission, numérotation, verrouillage, paiements, avoirs, acomptes, sauvegarde/restauration). Workflow : `.github/workflows/ci.yml`. |
 | Projet Xcode | Utilisé tel quel par `xcodebuild` en CI ; jamais ouvert dans l'interface d'Xcode |
 | Interface utilisateur | **Non testée manuellement** (aucun Mac interactif disponible) : parcours, ergonomie, VoiceOver, Dynamic Type et rendu visuel des écrans restent à vérifier |

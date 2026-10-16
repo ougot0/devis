@@ -24,7 +24,7 @@
 │  Money (Decimal, arrondis)                 │  PDFWriter (PDF 1.7 natif)        │
 │  Domain (entreprise, client, lignes…)      │  Polices standard + métriques AFM │
 │  DocumentCalculator (HT, TVA par taux…)    │  TextLayout (césure, coupure)     │
-│  Payments (encaissements, retards)         │  DocumentRenderer + 8 modèles     │
+│  Payments (encaissements, retards)         │  DocumentRenderer + 14 modèles     │
 │  Numbering (chronologique, continu)        │  (en-têtes, tableau multipage,    │
 │  Lifecycle (statuts, conversion, avoirs)   │   totaux, mentions, pieds de page)│
 │  Compliance (mentions, contrôles)          │                                   │

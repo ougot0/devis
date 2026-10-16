@@ -77,7 +77,7 @@ Ce sont des estimations : l'ACRE n'est pas prise en compte et seul le calcul de 
 
 ## 7. Personnaliser vos documents
 
-*Plus › Entreprise et documents › Modèles et apparence* : 8 modèles, couleur principale, typographie, logo, coordonnées bancaires, zone « Bon pour accord ». *Aperçu avec un document d'exemple* montre le rendu réel.
+*Plus › Entreprise et documents › Modèles et apparence* : 14 modèles, couleur principale, typographie, logo, coordonnées bancaires, zone « Bon pour accord ». *Aperçu avec un document d'exemple* montre le rendu réel.
 
 *Numérotation* : formats personnalisables (par exemple `F-{AAAA}-{N:4}` → F-2026-0001).
 
