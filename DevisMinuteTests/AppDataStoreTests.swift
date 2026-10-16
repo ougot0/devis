@@ -11,7 +11,7 @@ final class AppDataStoreTests: XCTestCase {
 
     override func setUp() async throws {
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
-        container = try ModelContainer(for: SettingsEntity.self, CustomerEntity.self, CatalogEntity.self, DocumentEntity.self, configurations: configuration)
+        container = try ModelContainer(for: SettingsEntity.self, CustomerEntity.self, CatalogEntity.self, DocumentEntity.self, ExpenseEntity.self, configurations: configuration)
         store = AppDataStore(context: container.mainContext)
         let profile = CompanyProfile(
             tradeName: "Atelier Test", legalName: "Atelier Test SARL", legalForm: .sarl, shareCapital: 1000,
@@ -164,6 +164,20 @@ final class AppDataStoreTests: XCTestCase {
         XCTAssertGreaterThan(pdf.pageCount, 0)
         let snapshot = store.makeSnapshot(appVersion: "test")
         XCTAssertNotNil(snapshot.documents.first { $0.id == quote.id }?.signature)
+    }
+
+    func testExpensesProfitAndBackup() throws {
+        let invoice = try draftInvoice(price: 1000)
+        _ = try store.issue(id: invoice.id)
+        try store.save(expense: ExpenseRecord(date: Date(), supplier: "Fournisseur", category: .materials, amountTTC: 240, vatAmount: 40))
+        XCTAssertThrowsError(try store.save(expense: ExpenseRecord(date: Date(), amountTTC: 0)))
+        let profit = store.profit(interval: nil)
+        XCTAssertEqual(profit.revenueHT, 1000)
+        XCTAssertEqual(profit.expenses, 200, "Entreprise assujettie : dépense comptée HT")
+        let snapshot = store.makeSnapshot(appVersion: "test")
+        XCTAssertEqual(snapshot.expenses?.count, 1)
+        try store.restore(snapshot)
+        XCTAssertEqual(store.allExpenses().count, 1)
     }
 }
 

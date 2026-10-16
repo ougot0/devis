@@ -21,8 +21,10 @@ public struct BackupSnapshot: Codable, Sendable, Equatable {
     /// Réglages d'apparence et préférences de l'application (JSON opaque pour le cœur).
     public var settings: Data?
     public var logo: Data?
+    /// Dépenses (absent des sauvegardes antérieures).
+    public var expenses: [ExpenseRecord]?
 
-    public init(createdAt: Date = Date(), appVersion: String, company: CompanyProfile, customers: [CustomerRecord], catalog: [CatalogItem], documents: [DocumentRecord], numbering: [String: NumberingState], numberingSchemes: [String: NumberingScheme] = [:], settings: Data? = nil, logo: Data? = nil) {
+    public init(createdAt: Date = Date(), appVersion: String, company: CompanyProfile, customers: [CustomerRecord], catalog: [CatalogItem], documents: [DocumentRecord], numbering: [String: NumberingState], numberingSchemes: [String: NumberingScheme] = [:], settings: Data? = nil, logo: Data? = nil, expenses: [ExpenseRecord]? = nil) {
         self.formatVersion = Self.currentFormatVersion
         self.createdAt = createdAt
         self.appVersion = appVersion
@@ -34,6 +36,7 @@ public struct BackupSnapshot: Codable, Sendable, Equatable {
         self.numberingSchemes = numberingSchemes
         self.settings = settings
         self.logo = logo
+        self.expenses = expenses
     }
 }
 

@@ -39,6 +39,7 @@ struct RootView: View {
                 case .statistics: StatisticsView()
                 case .signature(let record): SignatureSheet(record: record, initialStrokes: DemoSupport.demoStrokes) {}
                 case .reminder(let record): SendDocumentSheet(record: record, mode: .reminder)
+                case .expenses: ExpenseListView()
                 }
             }
         }
@@ -47,11 +48,12 @@ struct RootView: View {
 
     #if DEBUG
     enum DemoSheet: Identifiable {
-        case editor(DocumentRecord), detail(UUID), preview(DocumentRecord), statistics, signature(DocumentRecord), reminder(DocumentRecord)
+        case editor(DocumentRecord), detail(UUID), preview(DocumentRecord), statistics, signature(DocumentRecord), reminder(DocumentRecord), expenses
         var id: String {
             switch self {
             case .signature: return "signature"
             case .reminder: return "reminder"
+            case .expenses: return "expenses"
             case .editor: return "editor"
             case .detail: return "detail"
             case .preview: return "preview"
@@ -87,6 +89,9 @@ struct RootView: View {
         case .signed:
             selection = .quotes
             if let id = DemoSupport.signedQuoteID { demoSheet = .detail(id) }
+        case .expenses:
+            selection = .more
+            demoSheet = .expenses
         case .reminder:
             selection = .invoices
             if let id = DemoSupport.overdueInvoiceID, let record = store.record(id: id) { demoSheet = .reminder(record) }
@@ -158,6 +163,7 @@ struct MoreView: View {
         List {
             Section {
                 NavigationLink { CatalogListView() } label: { Label("Catalogue", systemImage: "shippingbox") }
+                NavigationLink { ExpenseListView() } label: { Label("Dépenses et bénéfice", systemImage: "cart") }
                 NavigationLink { StatisticsView() } label: { Label("Statistiques", systemImage: "chart.bar") }
                 NavigationLink { ProfitabilityView() } label: { Label("Calculateur de rentabilité", systemImage: "percent") }
             }

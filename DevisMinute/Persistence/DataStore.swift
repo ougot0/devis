@@ -441,6 +441,39 @@ final class AppDataStore {
         try commit()
     }
 
+    // MARK: - Dépenses
+
+    func allExpenses() -> [ExpenseRecord] {
+        let descriptor = FetchDescriptor<ExpenseEntity>(sortBy: [SortDescriptor(\.date, order: .reverse)])
+        return ((try? context.fetch(descriptor)) ?? []).compactMap(\.expense)
+    }
+
+    func save(expense: ExpenseRecord) throws {
+        try expense.validate()
+        let identifier = expense.id
+        var descriptor = FetchDescriptor<ExpenseEntity>(predicate: #Predicate { $0.id == identifier })
+        descriptor.fetchLimit = 1
+        if let entity = try? context.fetch(descriptor).first {
+            entity.apply(expense)
+        } else {
+            context.insert(ExpenseEntity(expense: expense))
+        }
+        try commit()
+    }
+
+    func deleteExpense(id: UUID) throws {
+        var descriptor = FetchDescriptor<ExpenseEntity>(predicate: #Predicate { $0.id == id })
+        descriptor.fetchLimit = 1
+        guard let entity = try? context.fetch(descriptor).first else { throw StoreError.notFound }
+        context.delete(entity)
+        try commit()
+    }
+
+    /// Bénéfice estimé sur une période (TVA des dépenses récupérable si l'entreprise est assujettie).
+    func profit(interval: DateInterval?) -> ProfitSummary {
+        ProfitCalculator.summary(records: allRecords(), expenses: allExpenses(), interval: interval, vatRecoverable: company.isVATRegistered)
+    }
+
     // MARK: - Historique et reprise de numérotation
 
     /// Importe des factures émises avec un autre logiciel (archive, voir `HistoryImporter`).
@@ -494,7 +527,8 @@ final class AppDataStore {
             numbering: numbering,
             numberingSchemes: schemes,
             settings: PayloadCoding.encode(AppSettingsPayload(appearance: appearance, sealHeads: sealHeads, appLockEnabled: appLockEnabled)),
-            logo: logoJPEG
+            logo: logoJPEG,
+            expenses: allExpenses()
         )
     }
 
@@ -504,6 +538,7 @@ final class AppDataStore {
             try context.delete(model: DocumentEntity.self)
             try context.delete(model: CustomerEntity.self)
             try context.delete(model: CatalogEntity.self)
+            try context.delete(model: ExpenseEntity.self)
         } catch {
             context.rollback()
             throw StoreError.persistence(error.localizedDescription)
@@ -511,6 +546,7 @@ final class AppDataStore {
         for customer in snapshot.customers { context.insert(CustomerEntity(record: customer)) }
         for item in snapshot.catalog { context.insert(CatalogEntity(item: item)) }
         for record in snapshot.documents { context.insert(DocumentEntity(record: record)) }
+        for expense in snapshot.expenses ?? [] { context.insert(ExpenseEntity(expense: expense)) }
         company = snapshot.company
         numbering = snapshot.numbering
         schemes = snapshot.numberingSchemes

@@ -10,7 +10,7 @@ import DevisPDF
 /// de données fictives, puis ouvre l'écran demandé. Sert aux captures d'écran automatiques.
 enum DemoSupport {
     enum Screen: String {
-        case onboarding, dashboard, quotes, invoices, customers, more, editor, detail, preview, statistics, signature, signed, signedpdf, reminder
+        case onboarding, dashboard, quotes, invoices, customers, more, editor, detail, preview, statistics, signature, signed, signedpdf, reminder, expenses
     }
 
     static var screen: Screen? {
@@ -21,7 +21,7 @@ enum DemoSupport {
 
     static func makeContainer() throws -> ModelContainer {
         try ModelContainer(
-            for: SettingsEntity.self, CustomerEntity.self, CatalogEntity.self, DocumentEntity.self,
+            for: SettingsEntity.self, CustomerEntity.self, CatalogEntity.self, DocumentEntity.self, ExpenseEntity.self,
             configurations: ModelConfiguration(isStoredInMemoryOnly: true)
         )
     }
@@ -140,6 +140,20 @@ enum DemoSupport {
             }
         }
         UserDefaults.standard.set("9000", forKey: "monthlyGoalHT")
+
+        // Dépenses du mois et des mois précédents.
+        let expenses: [(Int, String, String, ExpenseCategory, Decimal, Decimal)] = [
+            (2, "Leroy Merlin", "Vis, colle, abrasifs", .materials, Decimal.exact("86.40"), 20),
+            (4, "Total Energies", "Gasoil camionnette", .travel, Decimal.exact("92.15"), 20),
+            (7, "Scierie du Lyonnais", "Chêne massif 27 mm", .materials, Decimal.exact("1248.00"), 20),
+            (9, "Orange Pro", "Forfait mobile", .phone, Decimal.exact("39.99"), 20),
+            (12, "Brasserie des Halles", "Déjeuner chantier", .meals, Decimal.exact("18.70"), 10),
+            (35, "Festool", "Ponceuse excentrique", .equipment, Decimal.exact("462.00"), 20),
+            (60, "MAAF Pro", "Assurance décennale", .insurance, Decimal.exact("118.00"), 0),
+        ]
+        for (age, supplier, label, category, amount, rate) in expenses {
+            try? store.save(expense: ExpenseRecord(date: daysAgo(age), supplier: supplier, label: label, category: category, amountTTC: amount, vatAmount: ExpenseRecord.vat(fromTTC: amount, rate: rate)))
+        }
     }
 }
 #endif

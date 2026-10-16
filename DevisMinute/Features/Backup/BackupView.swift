@@ -49,7 +49,7 @@ struct BackupView: View {
             } header: {
                 Text("Sauvegarde complète")
             } footer: {
-                Text("Le fichier contient toutes vos données : entreprise, clients, catalogue, devis, factures, paiements et réglages. Avec un mot de passe, il est chiffré (AES-256) : sans ce mot de passe, il est impossible de le restaurer. Conservez-le hors de l'iPhone (Fichiers, iCloud Drive, ordinateur).")
+                Text("Le fichier contient toutes vos données : entreprise, clients, catalogue, devis, factures, paiements, dépenses avec leurs justificatifs et réglages. Avec un mot de passe, il est chiffré (AES-256) : sans ce mot de passe, il est impossible de le restaurer. Conservez-le hors de l'iPhone (Fichiers, iCloud Drive, ordinateur).")
             }
 
             Section {
@@ -66,6 +66,7 @@ struct BackupView: View {
                     Button("Devis (CSV)") { exportCSV(CSVExporter.quotes(store.allRecords()), name: "devis") }
                     Button("Clients (CSV)") { exportCSV(CSVExporter.customers(store.allCustomers()), name: "clients") }
                     Button("Catalogue (CSV)") { exportCSV(CSVExporter.catalog(store.allCatalogItems()), name: "catalogue") }
+                    Button("Dépenses (CSV)") { exportCSV(CSVExporter.expenses(store.allExpenses()), name: "depenses") }
                 } else {
                     NavigationLink("Exports CSV — version complète") { PremiumView() }
                 }

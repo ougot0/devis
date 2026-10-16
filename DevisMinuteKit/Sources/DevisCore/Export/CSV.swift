@@ -149,6 +149,16 @@ public enum CSVExporter {
         }
         return CSV.make(header: catalogHeader, rows: rows)
     }
+
+    public static let expensesHeader = ["Date", "Fournisseur", "Libellé", "Catégorie", "Montant TTC", "TVA", "Montant HT", "Moyen de paiement", "Justificatif", "Notes"]
+
+    public static func expenses(_ items: [ExpenseRecord]) -> Data {
+        let rows = items.sorted { $0.date < $1.date }.map { item -> [String] in
+            [DateFormatting.short(item.date), item.supplier, item.label, item.category.label, CSV.amount(item.amountTTC), CSV.amount(item.vatAmount),
+             CSV.amount(item.amountHT), item.paymentMethod.label, item.receiptJPEG == nil ? "non" : "oui", item.notes]
+        }
+        return CSV.make(header: expensesHeader, rows: rows)
+    }
 }
 
 /// Import des données compatibles (clients, catalogue) à partir de CSV.

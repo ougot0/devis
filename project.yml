@@ -39,6 +39,7 @@ targets:
         INFOPLIST_KEY_CFBundleDisplayName: DevisMinute
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.business
         INFOPLIST_KEY_NSFaceIDUsageDescription: "Face ID permet de verrouiller l'accès à vos devis et factures."
+        INFOPLIST_KEY_NSCameraUsageDescription: "L'appareil photo sert à scanner les tickets et factures de vos dépenses."
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait

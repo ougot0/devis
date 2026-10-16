@@ -115,6 +115,30 @@ final class CatalogEntity {
     var item: CatalogItem? { PayloadCoding.decode(CatalogItem.self, from: payload) }
 }
 
+@Model
+final class ExpenseEntity {
+    @Attribute(.unique) var id: UUID
+    var date: Date
+    var searchText: String
+    @Attribute(.externalStorage) var payload: Data
+
+    init(expense: ExpenseRecord) {
+        id = expense.id
+        date = expense.date
+        searchText = ""
+        payload = Data()
+        apply(expense)
+    }
+
+    func apply(_ expense: ExpenseRecord) {
+        date = expense.date
+        searchText = [expense.supplier, expense.label, expense.category.label, expense.notes].joined(separator: " ").lowercased()
+        payload = PayloadCoding.encode(expense)
+    }
+
+    var expense: ExpenseRecord? { PayloadCoding.decode(ExpenseRecord.self, from: payload) }
+}
+
 /// Groupe d'affichage : devis d'un côté, factures/acomptes/avoirs de l'autre.
 enum DocumentGroup: String {
     case quotes

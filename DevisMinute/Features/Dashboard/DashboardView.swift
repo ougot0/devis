@@ -239,6 +239,13 @@ struct DashboardView: View {
             Divider()
             FigureRow(label: "Encaissé", detail: "Paiements que vous avez enregistrés", value: summary.collectedTTC, note: period.rawValue, emphasis: Theme.success)
             Divider()
+            let profit = store.profit(interval: period.interval(today: today))
+            if profit.expenses > 0 {
+                FigureRow(label: "Dépenses", detail: "Achats et frais saisis (\(store.company.isVATRegistered ? "HT" : "TTC"))", value: profit.expenses, note: period.rawValue)
+                Divider()
+                FigureRow(label: "Bénéfice estimé", detail: "Facturé HT moins les dépenses", value: profit.profit, note: period.rawValue, emphasis: profit.profit < 0 ? Theme.danger : Theme.success)
+                Divider()
+            }
             FigureRow(label: "Reste à encaisser", detail: "\(summary.unpaidInvoicesCount) facture\(summary.unpaidInvoicesCount > 1 ? "s" : "") en attente de paiement", value: summary.outstandingTTC, note: "Toutes périodes")
             Divider()
             FigureRow(label: "En retard", detail: "\(summary.overdueInvoicesCount) facture\(summary.overdueInvoicesCount > 1 ? "s" : "") échue\(summary.overdueInvoicesCount > 1 ? "s" : "")", value: summary.overdueTTC, note: "", emphasis: summary.overdueTTC > 0 ? Theme.danger : nil)

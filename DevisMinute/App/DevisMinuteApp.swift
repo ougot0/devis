@@ -17,10 +17,10 @@ struct DevisMinuteApp: App {
             if DemoSupport.screen != nil {
                 container = try DemoSupport.makeContainer()
             } else {
-                container = try ModelContainer(for: SettingsEntity.self, CustomerEntity.self, CatalogEntity.self, DocumentEntity.self)
+                container = try ModelContainer(for: SettingsEntity.self, CustomerEntity.self, CatalogEntity.self, DocumentEntity.self, ExpenseEntity.self)
             }
             #else
-            container = try ModelContainer(for: SettingsEntity.self, CustomerEntity.self, CatalogEntity.self, DocumentEntity.self)
+            container = try ModelContainer(for: SettingsEntity.self, CustomerEntity.self, CatalogEntity.self, DocumentEntity.self, ExpenseEntity.self)
             #endif
         } catch {
             // Échec d'ouverture de la base : on ne crée surtout pas une base vide par-dessus.
