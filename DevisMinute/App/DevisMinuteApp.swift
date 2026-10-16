@@ -47,6 +47,7 @@ struct DevisMinuteApp: App {
                 .task { @MainActor in
                     purchases.start()
                     await accounts.refreshCredentialState()
+                    await accounts.refreshOnlineSession()
                 }
         }
         .modelContainer(container)

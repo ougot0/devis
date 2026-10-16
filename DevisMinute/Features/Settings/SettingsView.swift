@@ -22,7 +22,7 @@ struct SettingsView: View {
             } header: {
                 Text("Confidentialité")
             } footer: {
-                Text("Vos données restent sur cet iPhone, chiffrées par iOS lorsque l'appareil est verrouillé. Aucune donnée n'est envoyée à un serveur.")
+                Text("Vos devis, factures et clients restent sur cet iPhone, chiffrés par iOS lorsque l'appareil est verrouillé. Seul l'e-mail d'un compte en ligne (facultatif) est enregistré sur nos serveurs, en France.")
             }
             Section {
                 LabeledContent("Version", value: AppConfiguration.appVersion)

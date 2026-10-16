@@ -12,7 +12,7 @@ Tout reste modifiable dans *Plus › Entreprise et documents*.
 
 ### Compte et version complète
 
-*Plus › Mon compte* : créez votre compte avec votre identifiant Apple (facultatif, sans mot de passe). La **version complète** coûte **4,99 €, une seule fois** : 14 modèles, statistiques, exports CSV et XML, dépenses et bénéfice, cotisations URSSAF, photos jointes. La création, l'émission, l'envoi, la signature et la sauvegarde des documents restent gratuits. *Restaurer mes achats* récupère l'achat sur un nouvel iPhone.
+*Plus › Mon compte* : créez votre compte (facultatif) **avec Apple** (sans mot de passe) ou **avec votre e-mail** : saisissez l'adresse et un mot de passe (8 caractères, lettres et chiffres), puis ouvrez le lien de confirmation reçu par e-mail et connectez-vous. *Mot de passe oublié* envoie un lien pour en choisir un nouveau. *Supprimer mon compte* efface le compte e-mail de nos serveurs ; vos documents restent sur l'iPhone. La **version complète** coûte **4,99 €, une seule fois** : 14 modèles, statistiques, exports CSV et XML, dépenses et bénéfice, cotisations URSSAF, photos jointes. La création, l'émission, l'envoi, la signature et la sauvegarde des documents restent gratuits. *Restaurer mes achats* récupère l'achat sur un nouvel iPhone.
 
 ## 2. Créer un devis
 

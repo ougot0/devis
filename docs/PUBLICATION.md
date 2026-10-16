@@ -22,8 +22,12 @@ En mode `.paidUpfront`, aucun achat intégré n'est présenté (toutes les fonct
 
 ## 3. Conformité et déclarations
 
-- **Confidentialité** (« App Privacy ») : « Données non collectées ». Le manifeste `PrivacyInfo.xcprivacy` est fourni.
-- **Politique de confidentialité** : URL obligatoire. Elle doit indiquer que les données restent sur l'appareil, qu'aucune donnée n'est transmise à l'éditeur, et rappeler que l'utilisateur est responsable du traitement des données de ses clients.
+- **Confidentialité** (« App Privacy ») : déclarer **Coordonnées › Adresse e-mail**, liée à l'utilisateur, utilisée pour le **fonctionnement de l'app**, sans pistage (compte e-mail facultatif). Le manifeste `PrivacyInfo.xcprivacy` le déclare déjà.
+- **Compte e-mail (Supabase)** : projet « DevisMinute » (région Paris), fonction `delete-account` déployée. Avant la publication, dans le tableau de bord Supabase :
+  1. *Authentication › URL Configuration › Site URL* : une page publique (par exemple la page de la politique de confidentialité) vers laquelle renvoient les liens de confirmation ;
+  2. *Authentication › Emails › SMTP Settings* : brancher un service d'envoi (Resend, Brevo… offre gratuite) — l'envoi intégré de Supabase ne livre qu'aux membres de l'équipe et est limité à quelques e-mails par heure ;
+  3. *Authentication › Emails › Templates* : traduire les e-mails de confirmation et de réinitialisation en français.
+- **Politique de confidentialité** : URL obligatoire. Texte prêt dans `docs/CONFIDENTIALITE.md` : les documents restent sur l'appareil, seul l'e-mail du compte facultatif est enregistré en ligne (Supabase, Paris), et l'utilisateur reste responsable des données de ses clients.
 - **Chiffrement (export compliance)** : l'application utilise du chiffrement (AES-GCM de CryptoKit pour les sauvegardes, HTTPS de StoreKit). Répondre au questionnaire d'App Store Connect ; ce type d'usage relève en général des exemptions, mais **à confirmer**. La **France** impose des formalités pour les moyens de cryptologie : vérifier auprès de l'ANSSI si une déclaration est requise (Apple le rappelle pour une distribution en France). Une fois la réponse établie, ajouter la clé `ITSAppUsesNonExemptEncryption` au projet.
 - **Autorisations demandées** : appareil photo (scan des justificatifs de dépenses), notifications (rappels d'échéance), Face ID (verrouillage). Aucune n'est obligatoire pour utiliser l'application.
 - **Classification par âge** : 4+.

@@ -178,9 +178,9 @@ struct MoreView: View {
             Section {
                 NavigationLink { AccountView() } label: {
                     HStack(spacing: Theme.Space.m) {
-                        InitialsAvatar(name: accounts.account?.name.isEmpty == false ? accounts.account!.name : "Moi", size: 40)
+                        InitialsAvatar(name: accounts.displayName ?? "Moi", size: 40)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(accounts.account.map { $0.name.isEmpty ? "Mon compte" : $0.name } ?? "Créer mon compte")
+                            Text(accounts.displayName ?? "Créer mon compte")
                                 .font(.body.weight(.semibold))
                             Text(purchases.isPremium ? "Version complète active" : "Version gratuite · débloquer pour 4,99 €")
                                 .font(.footnote).foregroundStyle(purchases.isPremium ? Theme.success : Theme.neutral)
