@@ -7,6 +7,7 @@ struct DevisMinuteApp: App {
     @State private var store: AppDataStore
     @State private var purchases = PurchaseManager()
     @State private var appLock = AppLock()
+    @State private var accounts = AccountManager()
 
     init() {
         let container: ModelContainer
@@ -41,8 +42,12 @@ struct DevisMinuteApp: App {
                 .environment(store)
                 .environment(purchases)
                 .environment(appLock)
+                .environment(accounts)
                 .tint(Theme.petrol)
-                .task { @MainActor in purchases.start() }
+                .task { @MainActor in
+                    purchases.start()
+                    await accounts.refreshCredentialState()
+                }
         }
         .modelContainer(container)
     }

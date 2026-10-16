@@ -57,6 +57,7 @@ jobs:
           capture reminder 16-relance
           capture expenses 17-depenses
           capture micro 18-urssaf
+          capture account 19-compte
           xcrun simctl ui "$DEVICE" appearance dark
           capture dashboard 11-accueil-sombre
           capture editor 12-editeur-sombre

@@ -3,12 +3,12 @@
   "nonRenewingSubscriptions" : [],
   "products" : [
     {
-      "displayPrice" : "9.99",
+      "displayPrice" : "4.99",
       "familyShareable" : true,
       "internalID" : "6740000001",
       "localizations" : [
         {
-          "description" : "Débloque les 8 modèles, les statistiques et les exports. Achat unique.",
+          "description" : "14 modèles, statistiques, exports, dépenses, cotisations URSSAF et photos. Achat unique.",
           "displayName" : "Version complète",
           "locale" : "fr_FR"
         }

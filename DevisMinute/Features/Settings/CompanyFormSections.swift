@@ -7,12 +7,15 @@ struct LegalStatusSection: View {
 
     var body: some View {
         Section {
+            // Libellés longs : liste complète plutôt qu'un menu qui les tronque.
             Picker("Forme juridique", selection: $profile.legalForm) {
                 ForEach(LegalForm.allCases) { Text($0.label).tag($0) }
             }
+            .pickerStyle(.navigationLink)
             Picker("TVA", selection: $profile.vatRegime) {
                 ForEach(VATRegime.allCases) { Text($0.label).tag($0) }
             }
+            .pickerStyle(.inline)
             if profile.vatRegime == .standard {
                 Toggle("Option pour la TVA sur les débits", isOn: $profile.vatOnDebits)
             }

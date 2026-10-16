@@ -5,6 +5,11 @@
 	<!-- Protection des données : fichiers chiffrés et inaccessibles tant que l'appareil est verrouillé. -->
 	<key>com.apple.developer.default-data-protection</key>
 	<string>NSFileProtectionComplete</string>
+	<!-- Se connecter avec Apple (compte facultatif, sans serveur). -->
+	<key>com.apple.developer.applesignin</key>
+	<array>
+		<string>Default</string>
+	</array>
 	<!-- Conteneur partagé avec le widget de l'écran d'accueil. -->
 	<key>com.apple.security.application-groups</key>
 	<array>

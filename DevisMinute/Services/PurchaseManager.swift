@@ -2,10 +2,9 @@ import Foundation
 import StoreKit
 import Observation
 
-/// Modèle commercial. La stratégie définitive sera choisie avant publication :
-/// - `.paidUpfront` : application payante (≈ 9,99 €), tout est inclus, aucun achat intégré ;
-/// - `.freemium` : application gratuite, fonctions avancées débloquées par **un achat unique**
-///   (produit non consommable, jamais d'abonnement).
+/// Modèle commercial retenu : `.freemium`. Application gratuite, fonctions avancées débloquées
+/// par **un achat unique de 4,99 €** (produit non consommable, jamais d'abonnement).
+/// `.paidUpfront` (application payante, tout inclus) reste possible.
 ///
 /// Quel que soit le modèle, ne sont **jamais** limitées : la création et l'émission de devis
 /// et factures, les mentions légales, la sauvegarde et la restauration des données.
@@ -31,6 +30,9 @@ enum PremiumFeature: String, CaseIterable {
     case statistics
     case csvExport
     case structuredExport
+    case expenses
+    case micro
+    case photos
 
     var label: String {
         switch self {
@@ -38,6 +40,9 @@ enum PremiumFeature: String, CaseIterable {
         case .statistics: return "Statistiques détaillées"
         case .csvExport: return "Exports CSV"
         case .structuredExport: return "Export des données structurées (XML CII)"
+        case .expenses: return "Dépenses, scan des tickets et bénéfice"
+        case .micro: return "Cotisations URSSAF et suivi des plafonds (micro)"
+        case .photos: return "Photos jointes aux devis et factures"
         }
     }
 }

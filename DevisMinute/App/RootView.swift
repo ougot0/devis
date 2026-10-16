@@ -41,6 +41,7 @@ struct RootView: View {
                 case .reminder(let record): SendDocumentSheet(record: record, mode: .reminder)
                 case .expenses: ExpenseListView()
                 case .micro: MicroView()
+                case .account: AccountView()
                 }
             }
         }
@@ -49,13 +50,14 @@ struct RootView: View {
 
     #if DEBUG
     enum DemoSheet: Identifiable {
-        case editor(DocumentRecord), detail(UUID), preview(DocumentRecord), statistics, signature(DocumentRecord), reminder(DocumentRecord), expenses, micro
+        case editor(DocumentRecord), detail(UUID), preview(DocumentRecord), statistics, signature(DocumentRecord), reminder(DocumentRecord), expenses, micro, account
         var id: String {
             switch self {
             case .signature: return "signature"
             case .reminder: return "reminder"
             case .expenses: return "expenses"
             case .micro: return "micro"
+            case .account: return "account"
             case .editor: return "editor"
             case .detail: return "detail"
             case .preview: return "preview"
@@ -97,6 +99,9 @@ struct RootView: View {
         case .micro:
             selection = .more
             demoSheet = .micro
+        case .account:
+            selection = .more
+            demoSheet = .account
         case .reminder:
             selection = .invoices
             if let id = DemoSupport.overdueInvoiceID, let record = store.record(id: id) { demoSheet = .reminder(record) }
@@ -165,14 +170,31 @@ struct LockedView: View {
 
 /// Onglet « Plus » : outils et réglages.
 struct MoreView: View {
+    @Environment(PurchaseManager.self) private var purchases
+    @Environment(AccountManager.self) private var accounts
+
     var body: some View {
         List {
             Section {
+                NavigationLink { AccountView() } label: {
+                    HStack(spacing: Theme.Space.m) {
+                        InitialsAvatar(name: accounts.account?.name.isEmpty == false ? accounts.account!.name : "Moi", size: 40)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(accounts.account.map { $0.name.isEmpty ? "Mon compte" : $0.name } ?? "Créer mon compte")
+                                .font(.body.weight(.semibold))
+                            Text(purchases.isPremium ? "Version complète active" : "Version gratuite · débloquer pour 4,99 €")
+                                .font(.footnote).foregroundStyle(purchases.isPremium ? Theme.success : Theme.neutral)
+                        }
+                    }
+                    .padding(.vertical, 2)
+                }
+            }
+            Section {
                 NavigationLink { CatalogListView() } label: { Label("Catalogue", systemImage: "shippingbox") }
-                NavigationLink { ExpenseListView() } label: { Label("Dépenses et bénéfice", systemImage: "cart") }
+                NavigationLink { premium(.expenses) { ExpenseListView() } } label: { Label("Dépenses et bénéfice", systemImage: "cart") }
                 NavigationLink { StatisticsView() } label: { Label("Statistiques", systemImage: "chart.bar") }
                 NavigationLink { ProfitabilityView() } label: { Label("Calculateur de rentabilité", systemImage: "percent") }
-                NavigationLink { MicroView() } label: { Label("Cotisations URSSAF (micro)", systemImage: "building.columns") }
+                NavigationLink { premium(.micro) { MicroView() } } label: { Label("Cotisations URSSAF (micro)", systemImage: "building.columns") }
             }
             Section {
                 NavigationLink { SettingsView() } label: { Label("Entreprise et documents", systemImage: "building.2") }
@@ -186,5 +208,11 @@ struct MoreView: View {
         }
         .navigationTitle("Plus")
         .appBackground()
+    }
+
+    /// Fonction de la version complète : l'écran, ou la présentation de l'achat.
+    @ViewBuilder
+    private func premium<Content: View>(_ feature: PremiumFeature, @ViewBuilder content: () -> Content) -> some View {
+        if purchases.isUnlocked(feature) { content() } else { PremiumRequiredView(feature: feature) }
     }
 }

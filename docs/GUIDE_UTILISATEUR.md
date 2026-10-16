@@ -10,6 +10,10 @@ L'assistant vous demande, en quatre étapes :
 
 Tout reste modifiable dans *Plus › Entreprise et documents*.
 
+### Compte et version complète
+
+*Plus › Mon compte* : créez votre compte avec votre identifiant Apple (facultatif, sans mot de passe). La **version complète** coûte **4,99 €, une seule fois** : 14 modèles, statistiques, exports CSV et XML, dépenses et bénéfice, cotisations URSSAF, photos jointes. La création, l'émission, l'envoi, la signature et la sauvegarde des documents restent gratuits. *Restaurer mes achats* récupère l'achat sur un nouvel iPhone.
+
 ## 2. Créer un devis
 
 1. *Accueil › + Devis* (ou onglet *Devis* › +).
@@ -23,6 +27,10 @@ Depuis la fiche du devis : *Aperçu et partage du PDF*, *Marquer comme envoyé*,
 ### Faire signer le devis sur l'iPhone
 
 Sur la fiche du devis : *Faire signer le client*. Le client vérifie le montant, coche la mention « Devis reçu avant l'exécution des travaux, bon pour accord » et signe au doigt. Le devis passe en « Accepté », ne peut plus être modifié, et le PDF affiche la signature, le nom, la date et le lieu dans la zone « Bon pour accord ». Une empreinte du devis est enregistrée : la fiche indique si le devis a changé depuis la signature. Il s'agit d'une signature électronique simple (sans certificat).
+
+### Photos
+
+Dans l'éditeur, section *Photos* : *Prendre une photo* ou *Ajouter depuis la photothèque* (8 au plus), avec une légende. Elles sont imprimées à la fin du PDF.
 
 ## 3. Facturer
 

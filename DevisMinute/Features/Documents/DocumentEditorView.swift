@@ -5,6 +5,7 @@ import DevisCore
 /// Calculs instantanés, lignes réorganisables, client et catalogue en deux touches.
 struct DocumentEditorView: View {
     @Environment(AppDataStore.self) private var store
+    @Environment(PurchaseManager.self) private var purchases
     @Environment(\.dismiss) private var dismiss
 
     @State private var record: DocumentRecord
@@ -39,7 +40,13 @@ struct DocumentEditorView: View {
             datesSection
             optionsSection
             textsSection
-            PhotosSection(photos: $record.photos)
+            if purchases.isUnlocked(.photos) {
+                PhotosSection(photos: $record.photos)
+            } else {
+                Section("Photos") {
+                    NavigationLink { PremiumView() } label: { Label("Joindre des photos (version complète)", systemImage: "lock") }
+                }
+            }
             complianceSection
         }
         .appBackground()

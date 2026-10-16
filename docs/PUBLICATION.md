@@ -4,7 +4,7 @@
 
 | Décision | Où la reporter |
 |---|---|
-| Modèle commercial : payante (≈ 9,99 €) **ou** gratuite + achat unique | `AppConfiguration.monetization` (`DevisMinute/Services/PurchaseManager.swift`) |
+| Modèle commercial retenu : **gratuite + achat unique de 4,99 €** (non consommable, sans abonnement) | `AppConfiguration.monetization` (`DevisMinute/Services/PurchaseManager.swift`) |
 | Identifiant de bundle définitif | Réglages de la cible (`PRODUCT_BUNDLE_IDENTIFIER`), `project.yml` |
 | Identifiant du produit intégré | `AppConfiguration.premiumProductID`, `Config/Products.storekit`, App Store Connect |
 | Statut juridique de l'éditeur, mentions légales, politique de confidentialité | Site web de l'éditeur |
@@ -17,7 +17,8 @@ En mode `.paidUpfront`, aucun achat intégré n'est présenté (toutes les fonct
 2. Accepter l'accord **Paid Applications** et renseigner les informations bancaires et fiscales (indispensable pour une application payante ou des achats intégrés).
 3. Statut de **commerçant (trader)** au titre du DSA européen : obligatoire pour distribuer dans l'UE ; adresse, téléphone et email affichés sur la fiche.
 4. Créer l'application dans App Store Connect (nom, langue principale : français, identifiant de bundle, SKU). Les identifiants `com.devisminute.app`, `com.devisminute.app.widget` et le groupe d'apps `group.com.devisminute.app` sont créés automatiquement par la signature automatique d'Xcode (ou à créer dans *Certificates, Identifiers & Profiles*).
-5. Mode freemium : créer l'achat intégré non consommable avec le même identifiant, son prix, sa localisation, une capture et une note pour l'examen.
+5. Créer l'achat intégré **non consommable** `com.devisminute.app.premium` au prix de **4,99 €** (palier tarifaire correspondant), avec sa localisation, une capture et une note pour l'examen.
+6. Activer la capacité **Se connecter avec Apple** sur l'identifiant de l'app (la signature automatique d'Xcode le fait). Le compte est facultatif et se supprime dans l'app (*Plus › Mon compte › Supprimer mon compte*), comme l'exige la règle 5.1.1(v) de l'App Store. Aucun serveur n'est utilisé.
 
 ## 3. Conformité et déclarations
 

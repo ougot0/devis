@@ -5,6 +5,7 @@ import DevisCore
 /// Tableau de bord : distingue clairement devis en attente, montants facturés et sommes encaissées.
 struct DashboardView: View {
     @Environment(AppDataStore.self) private var store
+    @Environment(PurchaseManager.self) private var purchases
     @Binding var selection: RootView.AppTab
 
     @State private var records: [DocumentRecord] = []
@@ -159,7 +160,7 @@ struct DashboardView: View {
         let declaration = MicroCalculator.declaration(records: records, period: period, settings: settings, isCraftsman: store.company.registry == .rm)
         let alert = MicroCalculator.thresholds(records: records, year: Calendar.devisMinute.component(.year, from: today), franchise: !store.company.isVATRegistered)
             .filter { $0.level != .ok }.max { $0.level < $1.level }
-        return NavigationLink { MicroView() } label: {
+        return NavigationLink { if purchases.isUnlocked(.micro) { MicroView() } else { PremiumRequiredView(feature: .micro) } } label: {
             HStack(spacing: Theme.Space.m) {
                 Image(systemName: alert == nil ? "building.columns" : "exclamationmark.triangle.fill")
                     .font(.title3)

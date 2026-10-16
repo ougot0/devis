@@ -23,6 +23,7 @@ struct OnboardingView: View {
                     switch step {
                     case 0:
                         welcome
+                        AccountSignUpSection()
                         LegalStatusSection(profile: $profile)
                     case 1:
                         IdentitySection(profile: $profile)

@@ -4,7 +4,7 @@
 
 ## 1. L'idée
 
-Une application iPhone qui permet aux indépendants français (artisans, micro-entrepreneurs, freelances, petites entreprises) de créer rapidement des **devis et des factures**, de suivre les **paiements** et de tenir un **répertoire clients**. Objectif commercial : l'App Store, soit en application payante à environ 9,99 €, soit gratuite avec un déblocage par achat unique. Pas d'abonnement, pas de publicité.
+Une application iPhone qui permet aux indépendants français (artisans, micro-entrepreneurs, freelances, petites entreprises) de créer rapidement des **devis et des factures**, de suivre les **paiements** et de tenir un **répertoire clients**. Objectif commercial : l'App Store, application **gratuite** avec un déblocage par **achat unique de 4,99 €**. Pas d'abonnement, pas de publicité. Compte facultatif avec « Se connecter avec Apple ».
 
 Les contraintes du cahier des charges de départ :
 - application native (Swift / SwiftUI), qui fonctionne **entièrement hors ligne**, les données restent sur l'iPhone ;
@@ -63,7 +63,7 @@ Les 14 modèles de PDF :
 
 ## 6. Questions à trancher ensemble
 
-- Payante à 9,99 €, ou gratuite avec un achat unique ? Si gratuite, qu'est-ce que la version gratuite doit inclure ?
+- Décidé : gratuite + achat unique de 4,99 €. Version complète : 14 modèles, statistiques, exports, dépenses, cotisations URSSAF, photos.
 - Quel utilisateur viser en premier (artisans du bâtiment, freelances, tout le monde) ?
 - Vaut-il la peine de se connecter plus tard à une plateforme agréée de facturation électronique ? Ce service serait payant.
 - Qui a un Mac pour tester et publier ?
